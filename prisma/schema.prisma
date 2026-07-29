@@ -1,0 +1,283 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN") // ADMIN, OWNER
+  totpSecret   String?
+  totpEnabled  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Profile {
+  id                String       @id @default(uuid())
+  userId            String       @unique
+  name              String
+  title             String
+  bio               String
+  brandingStatement String
+  avatarUrl         String
+  heroImageUrl      String?
+  location          String?
+  email             String?
+  phone             String?
+  status            String       @default("Available for Architecture & Senior Consulting")
+  cvPdfUrl          String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  socialLinks       SocialLink[]
+}
+
+model SocialLink {
+  id        String  @id @default(uuid())
+  profileId String
+  platform  String  // GitHub, LinkedIn, Twitter/X, Email, YouTube
+  url       String
+  iconName  String
+  order     Int     @default(0)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id           String   @id @default(uuid())
+  company      String
+  position     String
+  period       String   // e.g., "2022 - Present"
+  location     String?
+  description  String
+  achievements String   // JSON array string
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  institution String
+  degree      String
+  field       String
+  period      String
+  location    String?
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Certification {
+  id            String    @id @default(uuid())
+  title         String
+  issuer        String
+  issueDate     String
+  expiryDate    String?
+  credentialUrl String?
+  credentialId  String?
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SkillCategory {
+  id     String  @id @default(uuid())
+  name   String  // Programming Languages, Frameworks, Cloud, etc.
+  order  Int     @default(0)
+  skills Skill[]
+}
+
+model Skill {
+  id              String             @id @default(uuid())
+  categoryId      String
+  name            String
+  iconName        String
+  level           Int                @default(90) // 1-100
+  experienceYears Int                @default(5)
+  description     String
+  order           Int                @default(0)
+  category        SkillCategory      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  projectTechs    ProjectTechnology[]
+}
+
+model Project {
+  id                  String              @id @default(uuid())
+  title               String
+  slug                String              @unique
+  summary             String
+  description         String              // Detailed breakdown
+  category            String              // Full-Stack, AI Architecture, Cloud Native, Microservices
+  featured            Boolean             @default(false)
+  rank                Int                 @default(0)
+  thumbnail           String
+  liveUrl             String?
+  githubUrl           String?
+  demoVideoUrl        String?
+  architectureDiagram String?             // URL or Mermaid syntax
+  featuresJson        String              @default("[]") // JSON string
+  challengesJson      String              @default("[]") // JSON string
+  solutionsJson       String              @default("[]") // JSON string
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  technologies        ProjectTechnology[]
+  images              ProjectImage[]
+}
+
+model ProjectTechnology {
+  id        String   @id @default(uuid())
+  projectId String
+  skillId   String?
+  name      String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill?   @relation(fields: [skillId], references: [id], onDelete: SetNull)
+}
+
+model ProjectImage {
+  id        String  @id @default(uuid())
+  projectId String
+  url       String
+  caption   String?
+  order     Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Resume {
+  id             String   @id @default(uuid())
+  title          String
+  isDefault      Boolean  @default(false)
+  summary        String
+  pdfUrl         String?
+  downloadsCount Int      @default(0)
+  sectionsJson   String   @default("{}") // Structured resume data
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BlogPost {
+  id              String        @id @default(uuid())
+  title           String
+  slug            String        @unique
+  summary         String
+  content         String        // Markdown content
+  coverImage      String
+  published       Boolean       @default(true)
+  categoryId      String?
+  readTimeMinutes Int           @default(5)
+  seoTitle        String?
+  seoDescription  String?
+  tagsJson        String        @default("[]")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  category        BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments        Comment[]
+}
+
+model BlogCategory {
+  id    String     @id @default(uuid())
+  name  String
+  slug  String     @unique
+  posts BlogPost[]
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  postId     String
+  authorName String
+  authorEmail String
+  content    String
+  approved   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  isSpam    Boolean  @default(false)
+  replySent Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model MediaFile {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  fileKey   String   @unique
+  mimeType  String
+  sizeBytes Int
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+}
+
+model ThemeSettings {
+  id              String   @id @default("default")
+  themeMode       String   @default("dark") // dark, light, system
+  primaryColor    String   @default("#3b82f6") // Hex or HSL
+  accentColor     String   @default("#8b5cf6")
+  fontSans        String   @default("Inter")
+  borderRadius    String   @default("0.75rem")
+  glassOpacity    Float    @default(0.15)
+  animationPreset String   @default("smooth") // smooth, energetic, minimal
+  updatedAt       DateTime @updatedAt
+}
+
+model SpecialDayTheme {
+  id                 String   @id @default(uuid())
+  name               String                      // "Birthday", "New Year", "Work Anniversary"
+  month              Int                         // 1-12
+  day                Int                         // 1-31
+  isActive           Boolean  @default(true)
+  primaryColor       String   @default("#f43f5e")
+  accentColor        String   @default("#f59e0b")
+  backgroundGradient String   @default("linear-gradient(135deg, #f43f5e, #f59e0b)")
+  particleEffect     String   @default("confetti") // confetti, snowflakes, stars, hearts, sparkles
+  greetingMessage    String                      // "Happy Birthday!"
+  celebrationBanner  String?                     // optional banner text
+  animationPreset    String   @default("festive")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model WebsiteSettings {
+  id                 String   @id @default("default")
+  siteName           String   @default("Gebretsadik Portfolio Platform")
+  metaTitle          String   @default("Senior Software Engineer & Tech Architect")
+  metaDescription    String   @default("Enterprise Portfolio & Technical Showcase")
+  ogImage            String?
+  navItemsJson       String   @default("[{\"label\":\"Home\",\"href\":\"/\"},{\"label\":\"About\",\"href\":\"/about\"},{\"label\":\"Skills\",\"href\":\"/skills\"},{\"label\":\"Projects\",\"href\":\"/projects\"},{\"label\":\"Resume\",\"href\":\"/resume\"},{\"label\":\"Blog\",\"href\":\"/blog\"},{\"label\":\"Contact\",\"href\":\"/contact\"}]")
+  sectionsConfigJson String   @default("{\"showHero\":true,\"showAbout\":true,\"showSkills\":true,\"showProjects\":true,\"showResume\":true,\"showBlog\":true,\"showContact\":true}")
+  googleAnalyticsId  String?
+  captchaEnabled     Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+}
+
+model Analytics {
+  id        String   @id @default(uuid())
+  pagePath  String
+  visitorIp String?
+  userAgent String?
+  referrer  String?
+  country   String?  @default("Global")
+  device    String?  @default("Desktop")
+  timestamp DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, CONTACT, CV_DOWNLOAD, SECURITY
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

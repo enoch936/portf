@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bg)"/>
+  <rect x="0" y="280" width="1200" height="40" fill="url(#glow)"/>
+  <circle cx="300" cy="300" r="120" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
+  <circle cx="600" cy="300" r="180" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.2"/>
+  <circle cx="900" cy="300" r="120" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
+  <text x="600" y="310" text-anchor="middle" font-family="system-ui" font-size="24" fill="#94a3b8" opacity="0.5">Engineering Excellence</text>
+</svg>
