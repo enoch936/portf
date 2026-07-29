@@ -13,7 +13,6 @@ import {
   Palette,
   Compass,
   Image as ImageIcon,
-  Bot,
   Inbox,
   Globe,
   Shield,
@@ -29,7 +28,6 @@ const navLinks = [
   { label: 'Visual Theme Builder', href: '/admin/theme', icon: Palette },
   { label: 'Navigation & Pages', href: '/admin/navigation', icon: Compass },
   { label: 'Media Library', href: '/admin/media', icon: ImageIcon },
-  { label: 'AI Assistant', href: '/admin/ai-assistant', icon: Bot },
   { label: 'Inbox & Messages', href: '/admin/inbox', icon: Inbox },
 ]
 
@@ -45,9 +43,9 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-dvh overflow-hidden flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-black/60 border-r border-white/10 hidden md:flex flex-col justify-between p-4 shrink-0 backdrop-blur-md">
+      <aside className="w-64 bg-black/60 border-r border-white/10 hidden md:flex flex-col p-4 shrink-0 overflow-y-auto overscroll-contain">
         <div className="space-y-6">
           {/* Logo Header */}
           <div className="flex items-center gap-3 px-2 py-2">
@@ -79,7 +77,7 @@ export default async function AdminLayout({
         </div>
 
         {/* Footer info & Logout */}
-        <div className="pt-4 border-t border-white/10 space-y-3">
+        <div className="pt-4 mt-auto border-t border-white/10 space-y-3">
           <Link
             href="/"
             target="_blank"
@@ -93,11 +91,11 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main Content View */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto overscroll-contain">
         {/* Top Header Bar */}
-        <header className="h-16 border-b border-white/10 bg-black/40 backdrop-blur-md px-6 flex items-center justify-between">
+        <header className="sticky top-0 z-10 h-16 shrink-0 border-b border-white/10 bg-black/40 backdrop-blur-md px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-xs font-mono text-gray-400">ADMIN SESSION ACTIVE</span>
           </div>
 

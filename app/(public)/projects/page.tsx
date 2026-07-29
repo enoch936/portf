@@ -99,7 +99,7 @@ export default async function ProjectsPage({
                   src={project.thumbnail}
                   alt={project.title}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover"
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-mono text-blue-400 border border-white/10">
                   {project.category}

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
-import { BookOpen, Clock, ArrowRight, Tag } from 'lucide-react'
+import { BookOpen, Clock, ArrowRight } from 'lucide-react'
 
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
@@ -46,7 +46,7 @@ export default async function BlogPage() {
                     src={post.coverImage}
                     alt={post.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover"
                   />
                   {post.category && (
                     <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-mono text-purple-300 border border-white/10">

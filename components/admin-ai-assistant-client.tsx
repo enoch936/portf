@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { generateAICacheAction } from '@/app/actions/ai'
-import { Bot, Sparkles, Copy, Check } from 'lucide-react'
+import { Sparkles, Copy, Check } from 'lucide-react'
 
 export function AdminAIAssistantClient() {
   const [type, setType] = useState<'project' | 'blog' | 'resume'>('project')

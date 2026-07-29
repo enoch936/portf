@@ -1,7 +1,8 @@
 import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
-import { FileText, Download, CheckCircle2 } from 'lucide-react'
+import { FileText } from 'lucide-react'
+import { AdminResumeManager } from '@/components/admin-resume-manager'
 
 export default async function AdminResumePage() {
   const resume = await prisma.resume.findFirst({ where: { isDefault: true } })
@@ -37,6 +38,9 @@ export default async function AdminResumePage() {
             </div>
 
             <p className="text-gray-300 leading-relaxed">{resume?.summary}</p>
+          </div>
+          <div className="border-t border-white/10 pt-5">
+            <AdminResumeManager resume={resume} />
           </div>
         </GlassCard>
       </div>

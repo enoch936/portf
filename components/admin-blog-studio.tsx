@@ -3,12 +3,13 @@
 import React, { useState } from 'react'
 import { createBlogPostAction, deleteBlogPostAction } from '@/app/actions/cms'
 import { GlassCard } from '@/components/ui/glass-card'
-import { Plus, Trash2, BookOpen, Check } from 'lucide-react'
+import { MediaUploadField } from '@/components/media-upload-field'
+import { Plus, Trash2, Check } from 'lucide-react'
 import type { BlogPost, BlogCategory } from '@prisma/client'
 
 type BlogPostWithCategory = BlogPost & { category?: BlogCategory | null }
 
-export function AdminBlogStudio({ initialPosts, categories }: { initialPosts: BlogPostWithCategory[]; categories: BlogCategory[] }) {
+export function AdminBlogStudio({ initialPosts }: { initialPosts: BlogPostWithCategory[]; categories: BlogCategory[] }) {
   const [posts, setPosts] = useState<BlogPostWithCategory[]>(initialPosts)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -80,13 +81,7 @@ export function AdminBlogStudio({ initialPosts, categories }: { initialPosts: Bl
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <input
-                type="text"
-                name="coverImage"
-                placeholder="Cover Image URL *"
-                required
-                className="px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
-              />
+              <MediaUploadField name="coverImage" label="Article cover image" required />
               <input
                 type="number"
                 name="readTimeMinutes"

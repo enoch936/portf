@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
-import { Upload, Copy, Check, File, Trash2 } from 'lucide-react'
+import { Upload, Copy, Check, File } from 'lucide-react'
 import type { MediaFile } from '@prisma/client'
 
 export function AdminMediaManager({ initialMedia }: { initialMedia: MediaFile[] }) {
@@ -45,11 +45,11 @@ export function AdminMediaManager({ initialMedia }: { initialMedia: MediaFile[] 
         <Upload className="w-8 h-8 text-blue-400 mx-auto" />
         <div>
           <h3 className="text-base font-bold text-white">Upload New Media Asset</h3>
-          <p className="text-xs text-gray-400">Select an image, PDF, or media file</p>
+          <p className="text-xs text-gray-400">Select directly from your device. Uploaded assets are ready for project, profile, and article forms.</p>
         </div>
         <label className="inline-block px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs cursor-pointer shadow-md transition-all">
           <span>{uploading ? 'Uploading File...' : 'Choose File to Upload'}</span>
-          <input type="file" onChange={handleUpload} disabled={uploading} className="hidden" />
+          <input type="file" accept="image/*,application/pdf,video/*" onChange={handleUpload} disabled={uploading} className="hidden" />
         </label>
       </GlassCard>
 

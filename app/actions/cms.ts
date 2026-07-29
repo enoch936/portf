@@ -86,6 +86,7 @@ export async function createProjectAction(data: {
   })
 
   revalidatePath('/projects')
+  revalidatePath('/')
   revalidatePath('/admin/projects')
   return { success: true, project }
 }
@@ -143,6 +144,7 @@ export async function updateProjectAction(
   }
 
   revalidatePath('/projects')
+  revalidatePath('/')
   revalidatePath(`/projects/${id}`)
   revalidatePath('/admin/projects')
   return { success: true, project: updated }
@@ -339,4 +341,15 @@ export async function incrementResumeDownloadAction(resumeId: string) {
     console.error('Error incrementing download:', error)
     return { success: false }
   }
+}
+
+export async function updateResumeMediaAction(resumeId: string, data: { title: string; pdfUrl: string }) {
+  await checkAdminAuth()
+  const resume = await prisma.resume.update({
+    where: { id: resumeId },
+    data: { title: data.title, pdfUrl: data.pdfUrl },
+  })
+  revalidatePath('/resume')
+  revalidatePath('/admin/resume')
+  return { success: true, resume }
 }

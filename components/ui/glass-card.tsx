@@ -13,8 +13,6 @@ interface GlassCardProps extends HTMLMotionProps<'div'> {
 export function GlassCard({ children, className, glowOnHover = false, ...props }: GlassCardProps) {
   return (
     <motion.div
-      whileHover={{ y: -4, scale: 1.01 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
       className={clsx(
         'glass-card p-6 relative overflow-hidden transition-all duration-300',
         glowOnHover && 'glass-glow',

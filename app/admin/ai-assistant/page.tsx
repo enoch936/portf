@@ -1,7 +1,6 @@
 import React from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { AdminAIAssistantClient } from '@/components/admin-ai-assistant-client'
-import { Bot } from 'lucide-react'
 
 export default async function AdminAIAssistantPage() {
   return (

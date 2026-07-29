@@ -2,7 +2,7 @@ import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
 import { DynamicIcon } from '@/components/icon'
-import { Cpu, Code2, Layers, Server, Cloud, Bot } from 'lucide-react'
+import { Cpu, Layers } from 'lucide-react'
 
 export default async function SkillsPage() {
   const categories = await prisma.skillCategory.findMany({

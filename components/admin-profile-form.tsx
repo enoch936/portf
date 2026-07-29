@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { updateProfileAction } from '@/app/actions/cms'
 import { Save, CheckCircle2 } from 'lucide-react'
+import { MediaUploadField } from '@/components/media-upload-field'
 import type { Profile } from '@prisma/client'
 
 export function AdminProfileForm({ profile }: { profile: Profile | null }) {
@@ -90,26 +91,8 @@ export function AdminProfileForm({ profile }: { profile: Profile | null }) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="text-xs font-mono text-gray-300">Avatar Image URL</label>
-          <input
-            type="text"
-            name="avatarUrl"
-            defaultValue={profile?.avatarUrl || ''}
-            required
-            className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-mono text-gray-300">Hero Image URL</label>
-          <input
-            type="text"
-            name="heroImageUrl"
-            defaultValue={profile?.heroImageUrl || ''}
-            className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
-          />
-        </div>
+        <MediaUploadField name="avatarUrl" label="Avatar image" defaultValue={profile?.avatarUrl || ''} required />
+        <MediaUploadField name="heroImageUrl" label="Hero image" defaultValue={profile?.heroImageUrl || ''} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

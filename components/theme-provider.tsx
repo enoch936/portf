@@ -1,8 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { SpecialDayParticles } from '@/components/special-day-particles'
-import { CelebrationBanner } from '@/components/celebration-banner'
 
 export interface SpecialDayConfig {
   id: string
@@ -113,21 +111,6 @@ export function ThemeProvider({
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleMode, isSpecialDay }}>
-      {isSpecialDay && theme.specialDay && (
-        <>
-          <CelebrationBanner
-            greetingMessage={theme.specialDay.greetingMessage}
-            celebrationBanner={theme.specialDay.celebrationBanner}
-            primaryColor={theme.specialDay.primaryColor}
-            accentColor={theme.specialDay.accentColor}
-          />
-          <SpecialDayParticles
-            effect={theme.specialDay.particleEffect}
-            primaryColor={theme.specialDay.primaryColor}
-            accentColor={theme.specialDay.accentColor}
-          />
-        </>
-      )}
       {children}
     </ThemeContext.Provider>
   )
