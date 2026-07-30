@@ -41,7 +41,7 @@ function wrapModel(model: Record<string, unknown>) {
           return result
         } catch (e: unknown) {
           console.error('Prisma query error:', e instanceof Error ? e.message : e)
-          return getFallback(method)
+          return Promise.resolve(getFallback(method))
         }
       }
     },
