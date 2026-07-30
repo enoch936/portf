@@ -32,8 +32,8 @@ function wrapModel(model: Record<string, unknown>) {
       return (...args: unknown[]) => {
         try {
           const result = (prop as Function).apply(target, args)
-          if (result instanceof Promise) {
-            return result.catch((e: Error) => {
+          if (result && typeof (result as any).then === 'function') {
+            return (result as any).then(null, (e: Error) => {
               console.error('Prisma query error:', e?.message || e)
               return getFallback(method)
             })
