@@ -5,17 +5,13 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Users, Eye, Download, Mail, FolderKanban, Bell, ArrowRight, TrendingUp } from 'lucide-react'
 
 export default async function AdminDashboardOverview() {
-  const projectsCount = await prisma.project.count()
-  const messagesCount = await prisma.contactMessage.count({ where: { isRead: false } })
-  const resume = await prisma.resume.findFirst({ where: { isDefault: true } })
-  const notifications = await prisma.notification.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-  })
-  const recentMessages = await prisma.contactMessage.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-  })
+  const [projectsCount, messagesCount, resume, notifications, recentMessages] = await Promise.all([
+    prisma.project.count().catch(() => 0),
+    prisma.contactMessage.count({ where: { isRead: false } }).catch(() => 0),
+    prisma.resume.findFirst({ where: { isDefault: true } }).catch(() => null),
+    prisma.notification.findMany({ take: 5, orderBy: { createdAt: 'desc' } }).catch(() => []),
+    prisma.contactMessage.findMany({ take: 5, orderBy: { createdAt: 'desc' } }).catch(() => []),
+  ])
 
   return (
     <div className="space-y-8">

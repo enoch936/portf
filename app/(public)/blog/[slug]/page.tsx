@@ -23,7 +23,7 @@ export default async function BlogPostDetailPage({
         orderBy: { createdAt: 'desc' },
       },
     },
-  })
+  }).catch(() => null)
 
   if (!post) {
     notFound()
@@ -34,12 +34,12 @@ export default async function BlogPostDetailPage({
       where: { published: true, createdAt: { lt: post.createdAt } },
       orderBy: { createdAt: 'desc' },
       select: { slug: true, title: true, coverImage: true, createdAt: true },
-    }),
+    }).catch(() => null),
     prisma.blogPost.findFirst({
       where: { published: true, createdAt: { gt: post.createdAt } },
       orderBy: { createdAt: 'asc' },
       select: { slug: true, title: true, coverImage: true, createdAt: true },
-    }),
+    }).catch(() => null),
   ])
 
   let tags: string[] = []

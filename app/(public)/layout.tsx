@@ -9,7 +9,7 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode
 }) {
-  const website = await prisma.websiteSettings.findUnique({ where: { id: 'default' } })
+  const website = await prisma.websiteSettings.findUnique({ where: { id: 'default' } }).catch(() => null)
   let navItems: NavItem[] = []
   let sections: Record<string, boolean> = {}
 

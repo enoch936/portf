@@ -5,12 +5,19 @@ import { prisma } from '@/lib/prisma'
 import { getActiveSpecialDayTheme } from '@/lib/special-day'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const website = await prisma.websiteSettings.findUnique({ where: { id: 'default' } })
-  return {
-    title: website?.metaTitle || 'Gebretsadik | Senior Architect & Tech Entrepreneur',
-    description: website?.metaDescription || 'Enterprise Portfolio CMS SaaS platform',
-    keywords: ['Software Engineer', 'Systems Architect', 'Freelancer', 'Cloud Native', 'Next.js 16', 'React 19'],
-    authors: [{ name: 'Gebretsadik M. Engida' }],
+  try {
+    const website = await prisma.websiteSettings.findUnique({ where: { id: 'default' } })
+    return {
+      title: website?.metaTitle || 'Gebretsadik | Senior Architect & Tech Entrepreneur',
+      description: website?.metaDescription || 'Enterprise Portfolio CMS SaaS platform',
+      keywords: ['Software Engineer', 'Systems Architect', 'Freelancer', 'Cloud Native', 'Next.js 16', 'React 19'],
+      authors: [{ name: 'Gebretsadik M. Engida' }],
+    }
+  } catch {
+    return {
+      title: 'Gebretsadik | Senior Architect & Tech Entrepreneur',
+      description: 'Enterprise Portfolio CMS SaaS platform',
+    }
   }
 }
 
@@ -19,18 +26,36 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const theme = await prisma.themeSettings.findUnique({ where: { id: 'default' } })
-  const specialDay = await getActiveSpecialDayTheme()
+  let initialTheme: import('@/components/theme-provider').ThemeConfig = {
+    themeMode: 'dark',
+    primaryColor: '#3b82f6',
+    accentColor: '#8b5cf6',
+    fontSans: 'Inter',
+    borderRadius: '0.75rem',
+    glassOpacity: 0.15,
+    animationPreset: 'smooth',
+    specialDay: null,
+  }
 
-  const initialTheme = {
-    themeMode: (theme?.themeMode as 'dark' | 'light' | 'system') || 'dark',
-    primaryColor: theme?.primaryColor || '#3b82f6',
-    accentColor: theme?.accentColor || '#8b5cf6',
-    fontSans: theme?.fontSans || 'Inter',
-    borderRadius: theme?.borderRadius || '0.75rem',
-    glassOpacity: theme?.glassOpacity || 0.15,
-    animationPreset: theme?.animationPreset || 'smooth',
-    specialDay: specialDay || null,
+  try {
+    const [theme, specialDay] = await Promise.all([
+      prisma.themeSettings.findUnique({ where: { id: 'default' } }),
+      getActiveSpecialDayTheme(),
+    ])
+    if (theme) {
+      initialTheme = {
+        themeMode: (theme?.themeMode as 'dark' | 'light' | 'system') || 'dark',
+        primaryColor: theme?.primaryColor || '#3b82f6',
+        accentColor: theme?.accentColor || '#8b5cf6',
+        fontSans: theme?.fontSans || 'Inter',
+        borderRadius: theme?.borderRadius || '0.75rem',
+        glassOpacity: theme?.glassOpacity || 0.15,
+        animationPreset: theme?.animationPreset || 'smooth',
+        specialDay: specialDay || null,
+      }
+    }
+  } catch {
+    // DB unavailable — use defaults
   }
 
   return (

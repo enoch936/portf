@@ -6,12 +6,14 @@ import { ResumeViewButton } from '@/components/resume-view-button'
 import { FileText, Download, Briefcase, GraduationCap, Award, Cpu, ShieldCheck } from 'lucide-react'
 
 export default async function ResumePage() {
-  const profile = await prisma.profile.findFirst()
-  const resume = await prisma.resume.findFirst({ where: { isDefault: true } })
-  const experiences = await prisma.experience.findMany({ orderBy: { order: 'asc' } })
-  const educations = await prisma.education.findMany({ orderBy: { order: 'asc' } })
-  const certifications = await prisma.certification.findMany({ orderBy: { order: 'asc' } })
-  const skills = await prisma.skill.findMany({ orderBy: { order: 'asc' }, take: 10 })
+  const [profile, resume, experiences, educations, certifications, skills] = await Promise.all([
+    prisma.profile.findFirst().catch(() => null),
+    prisma.resume.findFirst({ where: { isDefault: true } }).catch(() => null),
+    prisma.experience.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+    prisma.education.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+    prisma.certification.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+    prisma.skill.findMany({ orderBy: { order: 'asc' }, take: 10 }).catch(() => []),
+  ])
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-8">

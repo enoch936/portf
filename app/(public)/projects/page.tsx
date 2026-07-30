@@ -29,7 +29,7 @@ export default async function ProjectsPage({
     where: whereClause,
     orderBy: { rank: 'asc' },
     include: { technologies: true },
-  })
+  }).catch(() => [])
 
   const categories = [
     'All',
