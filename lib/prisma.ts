@@ -1,10 +1,12 @@
 import { PrismaClient } from '@prisma/client'
+import fs from 'fs'
+import path from 'path'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
+let databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
 
 function getFallback(method: string) {
   if (method === 'findUnique' || method === 'findFirst') return null
@@ -26,29 +28,27 @@ function makeFallbackModel() {
 let prisma: PrismaClient
 
 if (!databaseUrl) {
-  console.warn('DATABASE_URL not set — using fallback prisma stub (no DB).')
-  const fallback = new Proxy(
-    {},
-    {
-      get(_t, prop: string) {
-        if (prop === '$connect' || prop === '$disconnect' || prop === '$on' || prop === '$use' || prop === '$transaction') {
-          return async () => undefined
-        }
-        return makeFallbackModel()
-      },
-    }
-  )
-
-  prisma = fallback as unknown as PrismaClient
-} else {
-  prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-      datasources: { db: { url: databaseUrl } },
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    })
-
-  if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+  // Create a local SQLite file under prisma/dev.db and use it as fallback.
+  const prismaDir = path.join(process.cwd(), 'prisma')
+  try {
+    if (!fs.existsSync(prismaDir)) fs.mkdirSync(prismaDir, { recursive: true })
+    const devDbPath = path.join(prismaDir, 'dev.db')
+    if (!fs.existsSync(devDbPath)) fs.writeFileSync(devDbPath, '')
+    const resolved = path.resolve(devDbPath).replace(/\\/g, '/')
+    databaseUrl = `file:${resolved}`
+    console.info(`No DATABASE_URL set — created/using local SQLite at ${devDbPath}`)
+  } catch (err) {
+    console.error('Failed to create local SQLite dev.db:', err)
+  }
 }
+
+prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    datasources: { db: { url: databaseUrl } },
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export { prisma }
