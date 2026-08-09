@@ -23,6 +23,8 @@ function makeFallbackModel() {
   )
 }
 
+let prisma: PrismaClient
+
 if (!databaseUrl) {
   console.warn('DATABASE_URL not set — using fallback prisma stub (no DB).')
   const fallback = new Proxy(
@@ -37,9 +39,9 @@ if (!databaseUrl) {
     }
   )
 
-  export const prisma = fallback as unknown as PrismaClient
+  prisma = fallback as unknown as PrismaClient
 } else {
-  export const prisma =
+  prisma =
     globalForPrisma.prisma ??
     new PrismaClient({
       datasources: { db: { url: databaseUrl } },
@@ -48,3 +50,5 @@ if (!databaseUrl) {
 
   if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 }
+
+export { prisma }
