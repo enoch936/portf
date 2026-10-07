@@ -31,13 +31,13 @@ export function HeroVisual({
   const glare = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,.55), transparent 55%)`
 
   const float = (d: number, delay = 0) =>
-    reduce ? {} : { animate: { y: [0, -d, 0] }, transition: { duration: 5 + delay, repeat: Infinity, ease: 'easeInOut' as const, delay } }
+    reduce ? {} : { animate: { y: [0, -d, 0] }, transition: { duration: 6 + delay, repeat: Infinity, ease: 'easeInOut' as const, delay } }
 
   return (
     <motion.div
       initial={reduce ? false : { opacity: 0, y: 40, scale: 0.94 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 1, delay: 0.25, ease: [0.21, 0.47, 0.32, 0.98] }}
+      transition={{ duration: 0.6, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="relative mx-auto w-full max-w-md [perspective:1100px]"
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
@@ -49,7 +49,7 @@ export function HeroVisual({
         my.set(0)
       }}
     >
-      <div className="absolute -inset-6 rounded-[3rem] blur-3xl opacity-60" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-1) 45%, transparent), color-mix(in srgb, var(--brand-2) 40%, transparent))' }} />
+      <div className="absolute -inset-10 rounded-[3rem] opacity-70" style={{ background: 'radial-gradient(closest-side, color-mix(in srgb, var(--brand-1) 40%, transparent), transparent)' }} />
 
       <motion.div style={reduce ? undefined : { rotateX, rotateY, transformStyle: 'preserve-3d' }} className="relative">
         <div className="glass-card card-gradient relative overflow-hidden p-4 sm:p-5" style={{ borderRadius: '1.75rem' }}>
@@ -58,7 +58,7 @@ export function HeroVisual({
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
             {!reduce && (
               <motion.div
-                className="absolute inset-0 mix-blend-soft-light"
+                className="absolute inset-0 opacity-30"
                 style={{ background: glare }}
               />
             )}

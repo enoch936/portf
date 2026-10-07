@@ -154,6 +154,7 @@ body {
 html {
   scroll-behavior: smooth;
 }
+main, section { content-visibility: visible; }
 
 /* Scroll to top button */
 .scroll-top-btn {
@@ -207,10 +208,13 @@ html {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
   height: 3px;
   z-index: 100;
+  transform-origin: left;
+  transform: scaleX(0);
+  will-change: transform;
   background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
-  transition: width 0.1s linear;
   border-radius: 0 2px 2px 0;
 }
 
@@ -458,7 +462,6 @@ html {
 .site-footer {
   background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
   border-top: 1px solid var(--line);
-  backdrop-filter: blur(12px);
 }
 
 .brand-mark {
@@ -551,13 +554,10 @@ h2 { letter-spacing: -0.025em; }
 
 /* ---------- Ambient backdrop ---------- */
 .site-backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.site-backdrop .blob {
-  position: absolute; border-radius: 9999px; filter: blur(110px); opacity: .5;
-  will-change: transform; animation: drift 22s ease-in-out infinite alternate;
-}
-.site-backdrop .blob-1 { width: 46rem; height: 46rem; top: -18rem; left: -12rem; background: color-mix(in srgb, var(--brand-1) 38%, transparent); }
-.site-backdrop .blob-2 { width: 40rem; height: 40rem; top: 8rem; right: -14rem; background: color-mix(in srgb, var(--brand-2) 32%, transparent); animation-duration: 28s; animation-delay: -6s; }
-.site-backdrop .blob-3 { width: 34rem; height: 34rem; bottom: -14rem; left: 28%; background: color-mix(in srgb, var(--brand-1) 20%, transparent); animation-duration: 34s; animation-delay: -12s; }
+.site-backdrop .blob { position: absolute; border-radius: 9999px; opacity: .55; transform: translateZ(0); }
+.site-backdrop .blob-1 { width: 46rem; height: 46rem; top: -18rem; left: -12rem; background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-1) 34%, transparent), transparent); }
+.site-backdrop .blob-2 { width: 40rem; height: 40rem; top: 8rem; right: -14rem; background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-2) 28%, transparent), transparent); }
+.site-backdrop .blob-3 { width: 34rem; height: 34rem; bottom: -14rem; left: 28%; background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-1) 16%, transparent), transparent); }
 .light .site-backdrop .blob { opacity: .32; }
 .site-backdrop .grid-lines {
   position: absolute; inset: 0;
@@ -577,7 +577,9 @@ h2 { letter-spacing: -0.025em; }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: calc(var(--radius) + .35rem);
-  transition: border-color .4s var(--ease-out), box-shadow .4s var(--ease-out), background .4s var(--ease-out);
+  transition: border-color .3s ease, box-shadow .3s ease;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  background: var(--panel-strong);
 }
 .glass-card:hover { border-color: color-mix(in srgb, var(--brand-1) 35%, var(--line)); }
 
@@ -585,7 +587,7 @@ h2 { letter-spacing: -0.025em; }
 .spotlight::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--brand-1) 16%, transparent), transparent 60%);
-  transition: opacity .35s var(--ease-out);
+  transition: opacity .25s ease;
 }
 .spotlight:hover::after { opacity: 1; }
 
@@ -623,7 +625,6 @@ h2 { letter-spacing: -0.025em; }
 .btn-primary:hover::after { transform: translateX(120%) skewX(-18deg); }
 .btn-ghost {
   color: var(--ink); background: var(--panel); border: 1px solid var(--line);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .btn-ghost:hover { border-color: color-mix(in srgb, var(--brand-1) 45%, var(--line)); background: var(--panel-strong); }
 .btn-ghost .arrow, .btn-primary .arrow { transition: transform .3s var(--ease-out); }
@@ -636,7 +637,6 @@ h2 { letter-spacing: -0.025em; }
   background: linear-gradient(100deg, var(--brand-1), var(--brand-2), var(--brand-1));
   background-size: 220% 100%;
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  animation: gradient-pan 7s linear infinite;
 }
 @keyframes gradient-pan { to { background-position: 220% 0; } }
 .on-dark { color: #fff; }
@@ -668,8 +668,7 @@ h2 { letter-spacing: -0.025em; }
 /* ---------- Floating chips / bento ---------- */
 .float-chip {
   background: var(--panel-strong); border: 1px solid var(--line); border-radius: 1rem;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 18px 40px -16px rgba(10, 20, 40, .35);
+  box-shadow: 0 12px 28px -14px rgba(10, 20, 40, .35);
 }
 .icon-tile {
   display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: .9rem; color: #fff;
@@ -679,7 +678,6 @@ h2 { letter-spacing: -0.025em; }
 .cta-surface {
   position: relative; overflow: hidden; isolation: isolate; color: #fff; border-radius: 2rem;
   background: linear-gradient(135deg, #0b1220 0%, color-mix(in srgb, var(--brand-1) 38%, #0b1220) 55%, color-mix(in srgb, var(--brand-2) 45%, #0b1220) 100%);
-  background-size: 160% 160%; animation: cta-shift 14s ease-in-out infinite alternate;
 }
 @keyframes cta-shift { to { background-position: 100% 100%; } }
 .cta-surface::before {
@@ -693,7 +691,7 @@ h2 { letter-spacing: -0.025em; }
 .nav-shell { transition: all .5s var(--ease-out); border: 1px solid transparent; }
 .nav-shell.is-scrolled {
   background: color-mix(in srgb, hsl(var(--background)) 82%, transparent); border-color: var(--line);
-  backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 18px 50px -22px rgba(10, 20, 40, .45);
 }
 .nav-shell.is-open { background: hsl(var(--background)); }

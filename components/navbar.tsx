@@ -65,7 +65,7 @@ export function Navbar({ navItems = defaultNavItems }: { navItems?: NavItem[] })
     <motion.header
       initial={{ y: -90, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+      transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="fixed top-0 inset-x-0 z-50 px-3 sm:px-5 pt-3"
     >
       <div

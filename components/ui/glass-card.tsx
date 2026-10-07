@@ -23,11 +23,11 @@ export function GlassCard({ children, className, glowOnHover = false, onMouseMov
   return (
     <motion.div
       className={clsx('glass-card spotlight p-6 relative overflow-hidden', glowOnHover && 'card-gradient', className)}
-      initial={reduce ? false : { opacity: 0, y: 26 }}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-      whileHover={glowOnHover && !reduce ? { y: -6 } : undefined}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
+      whileHover={glowOnHover && !reduce ? { y: -4 } : undefined}
       onMouseMove={handleMove}
       {...props}
     >

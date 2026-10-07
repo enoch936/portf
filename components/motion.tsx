@@ -32,10 +32,10 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y, x, filter: 'blur(6px)' }}
-      whileInView={{ opacity: 1, y: 0, x: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: '-70px' }}
-      transition={{ duration: 0.8, delay, ease: easeOut }}
+      initial={{ opacity: 0, y: Math.min(y, 18), x }}
+      whileInView={{ opacity: 1, y: 0, x: 0 }}
+      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
+      transition={{ duration: 0.45, delay: Math.min(delay, 0.25), ease: easeOut }}
     >
       {children}
     </motion.div>
@@ -45,11 +45,11 @@ export function Reveal({
 /* ---------- Stagger: children cascade in ---------- */
 const container: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.06 } },
 }
 const item: Variants = {
-  hidden: { opacity: 0, y: 32, scale: 0.97, filter: 'blur(6px)' },
-  show: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.75, ease: easeOut } },
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeOut } },
 }
 
 export function Stagger({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -61,7 +61,7 @@ export function Stagger({ children, className }: { children: React.ReactNode; cl
       variants={container}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: '-80px' }}
+      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
     >
       {children}
     </motion.div>
@@ -97,9 +97,9 @@ export function WordReveal({
             <span key={`${pi}-${i}`} className="inline-block overflow-hidden align-bottom pb-[.08em] -mb-[.08em]">
               <motion.span
                 className={`inline-block ${part.gradient ? 'gradient-text' : ''}`}
-                initial={reduce ? false : { y: '110%', rotate: 4 }}
-                animate={{ y: 0, rotate: 0 }}
-                transition={{ duration: 0.9, delay: delay + i * 0.07, ease: easeOut }}
+                initial={reduce ? false : { y: '105%' }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.55, delay: delay + i * 0.04, ease: easeOut }}
               >
                 {word}&nbsp;
               </motion.span>
@@ -149,7 +149,7 @@ export function CountUp({ to, suffix = '', duration = 1.8 }: { to: number; suffi
       setValue(to)
       return
     }
-    const controls = animate(0, to, { duration, ease: 'easeOut', onUpdate: (v) => setValue(Math.round(v)) })
+    const controls = animate(0, to, { duration: Math.min(duration, 1.2), ease: 'easeOut', onUpdate: (v) => setValue(Math.round(v)) })
     return () => controls.stop()
   }, [inView, to, duration, reduce])
   return (
@@ -166,11 +166,12 @@ export function AnimatedBar({ level }: { level: number }) {
   return (
     <div className="w-full h-2 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
       <motion.div
-        className="h-full rounded-full bar-fill"
-        initial={reduce ? false : { width: 0 }}
-        whileInView={{ width: `${Math.max(0, Math.min(100, level))}%` }}
+        className="h-full rounded-full bar-fill origin-left"
+        style={{ width: `${Math.max(0, Math.min(100, level))}%` }}
+        initial={reduce ? false : { scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.3, ease: easeOut, delay: 0.15 }}
+        transition={{ duration: 0.9, ease: easeOut }}
       />
     </div>
   )
