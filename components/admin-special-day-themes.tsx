@@ -13,8 +13,10 @@ import { CalendarDays, Plus, Trash2, Check, X, Sparkles, Eye } from 'lucide-reac
 interface SpecialDayTheme {
   id: string
   name: string
-  month: number
-  day: number
+  month: number | null
+  day: number | null
+  startsAt: string | Date | null
+  endsAt: string | Date | null
   isActive: boolean
   primaryColor: string
   accentColor: string
@@ -29,6 +31,28 @@ const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
+
+const toLocalInputValue = (value: string | Date): string => {
+  const d = new Date(value)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+const formatSchedule = (theme: SpecialDayTheme): string => {
+  if (theme.startsAt) {
+    return new Date(theme.startsAt).toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+  if (theme.month != null && theme.day != null) {
+    return `${MONTH_NAMES[theme.month - 1]} ${theme.day} (yearly)`
+  }
+  return 'No schedule'
+}
 
 const PARTICLE_EFFECTS = ['confetti', 'snowflakes', 'stars', 'hearts', 'sparkles']
 
@@ -93,10 +117,13 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
+  const [formMode, setFormMode] = useState<'annual' | 'exact'>('annual')
   const [formName, setFormName] = useState('')
   const [formMonth, setFormMonth] = useState(1)
   const [formDay, setFormDay] = useState(1)
+  const [formStartsAt, setFormStartsAt] = useState('')
   const [formIsActive, setFormIsActive] = useState(true)
   const [formPrimaryColor, setFormPrimaryColor] = useState('#f43f5e')
   const [formAccentColor, setFormAccentColor] = useState('#f59e0b')
@@ -108,9 +135,14 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
 
   const loadThemes = async () => {
     setLoading(true)
-    const data = await getSpecialDayThemesAction()
-    setThemes(data as SpecialDayTheme[])
-    setLoading(false)
+    try {
+      const data = await getSpecialDayThemesAction()
+      setThemes(data as SpecialDayTheme[])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load special days')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -130,9 +162,11 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
   }, [initialThemes])
 
   const resetForm = () => {
+    setFormMode('annual')
     setFormName('')
     setFormMonth(1)
     setFormDay(1)
+    setFormStartsAt('')
     setFormIsActive(true)
     setFormPrimaryColor('#f43f5e')
     setFormAccentColor('#f59e0b')
@@ -143,6 +177,7 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
     setFormAnimationPreset('festive')
     setEditingId(null)
     setShowForm(false)
+    setError(null)
   }
 
   const applyPreset = (preset: Partial<SpecialDayTheme>) => {
@@ -158,9 +193,11 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
 
   const handleEdit = (theme: SpecialDayTheme) => {
     setEditingId(theme.id)
+    setFormMode(theme.startsAt ? 'exact' : 'annual')
     setFormName(theme.name)
-    setFormMonth(theme.month)
-    setFormDay(theme.day)
+    setFormMonth(theme.month ?? 1)
+    setFormDay(theme.day ?? 1)
+    setFormStartsAt(theme.startsAt ? toLocalInputValue(theme.startsAt) : '')
     setFormIsActive(theme.isActive)
     setFormPrimaryColor(theme.primaryColor)
     setFormAccentColor(theme.accentColor)
@@ -174,24 +211,39 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+
+    if (formMode === 'exact' && !formStartsAt) {
+      setError('Pick the exact date & time for this special day')
+      return
+    }
+
     const data = {
       name: formName,
-      month: formMonth,
-      day: formDay,
+      month: formMode === 'annual' ? formMonth : null,
+      day: formMode === 'annual' ? formDay : null,
+      startsAt: formMode === 'exact' ? new Date(formStartsAt).toISOString() : null,
+      endsAt:
+        formMode === 'exact'
+          ? new Date(`${formStartsAt.slice(0, 10)}T23:59:59.999`).toISOString()
+          : null,
       isActive: formIsActive,
       primaryColor: formPrimaryColor,
       accentColor: formAccentColor,
       backgroundGradient: formBackgroundGradient,
       particleEffect: formParticleEffect,
       greetingMessage: formGreetingMessage,
-      celebrationBanner: formCelebrationBanner || undefined,
+      celebrationBanner: formCelebrationBanner || null,
       animationPreset: formAnimationPreset,
     }
 
-    if (editingId) {
-      await updateSpecialDayThemeAction(editingId, data)
-    } else {
-      await createSpecialDayThemeAction(data)
+    const result = editingId
+      ? await updateSpecialDayThemeAction(editingId, data)
+      : await createSpecialDayThemeAction(data)
+
+    if (!result.success) {
+      setError(result.error || 'Failed to save special day')
+      return
     }
 
     resetForm()
@@ -201,12 +253,21 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
   }
 
   const handleDelete = async (id: string) => {
-    await deleteSpecialDayThemeAction(id)
+    if (!window.confirm('Delete this special day theme?')) return
+    setError(null)
+    const result = await deleteSpecialDayThemeAction(id)
+    if (!result.success) {
+      setError(result.error || 'Failed to delete special day')
+    }
     await loadThemes()
   }
 
   const handleToggleActive = async (theme: SpecialDayTheme) => {
-    await updateSpecialDayThemeAction(theme.id, { isActive: !theme.isActive })
+    setError(null)
+    const result = await updateSpecialDayThemeAction(theme.id, { isActive: !theme.isActive })
+    if (!result.success) {
+      setError(result.error || 'Failed to update special day')
+    }
     await loadThemes()
   }
 
@@ -231,6 +292,18 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
         <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-2">
           <Check className="w-4 h-4" />
           <span>Special day theme saved successfully!</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono flex items-center justify-between gap-2">
+          <span className="flex items-center gap-2">
+            <X className="w-4 h-4 shrink-0" />
+            {error}
+          </span>
+          <button onClick={() => setError(null)} className="p-1 rounded-lg hover:bg-red-500/20" aria-label="Dismiss error">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -261,6 +334,34 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
               ))}
             </div>
 
+            <div className="space-y-1.5">
+              <span className="text-xs text-gray-400 font-mono">Schedule:</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormMode('annual')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    formMode === 'annual'
+                      ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
+                      : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                  }`}
+                >
+                  Repeats every year
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormMode('exact')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    formMode === 'exact'
+                      ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
+                      : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                  }`}
+                >
+                  Exact date &amp; time
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-mono text-gray-300">Name</label>
@@ -286,35 +387,53 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-gray-300">Month</label>
-                <select
-                  value={formMonth}
-                  onChange={(e) => {
-                    const m = Number(e.target.value)
-                    setFormMonth(m)
-                    if (formDay > DAYS_IN_MONTH[m - 1]) setFormDay(DAYS_IN_MONTH[m - 1])
-                  }}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
-                >
-                  {MONTH_NAMES.map((name, i) => (
-                    <option key={i} value={i + 1}>{name}</option>
-                  ))}
-                </select>
-              </div>
+              {formMode === 'annual' ? (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono text-gray-300">Month</label>
+                    <select
+                      value={formMonth}
+                      onChange={(e) => {
+                        const m = Number(e.target.value)
+                        setFormMonth(m)
+                        if (formDay > DAYS_IN_MONTH[m - 1]) setFormDay(DAYS_IN_MONTH[m - 1])
+                      }}
+                      className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
+                    >
+                      {MONTH_NAMES.map((name, i) => (
+                        <option key={i} value={i + 1}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-gray-300">Day</label>
-                <select
-                  value={formDay}
-                  onChange={(e) => setFormDay(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
-                >
-                  {Array.from({ length: DAYS_IN_MONTH[formMonth - 1] }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>{i + 1}</option>
-                  ))}
-                </select>
-              </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono text-gray-300">Day</label>
+                    <select
+                      value={formDay}
+                      onChange={(e) => setFormDay(Number(e.target.value))}
+                      className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
+                    >
+                      {Array.from({ length: DAYS_IN_MONTH[formMonth - 1] }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono text-gray-300">Exact date &amp; time</label>
+                  <input
+                    type="datetime-local"
+                    value={formStartsAt}
+                    onChange={(e) => setFormStartsAt(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs"
+                    required
+                  />
+                  <p className="text-[10px] text-gray-500">
+                    Theme starts at this time and turns off at midnight of the same day.
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <label className="text-xs font-mono text-gray-300">Primary Color</label>
@@ -424,7 +543,7 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
                 <div>
                   <h4 className="text-sm font-bold text-white">{theme.name}</h4>
                   <p className="text-xs text-gray-400 font-mono">
-                    {MONTH_NAMES[theme.month - 1]} {theme.day}
+                    {formatSchedule(theme)}
                   </p>
                 </div>
                 <span

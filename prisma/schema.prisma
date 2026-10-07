@@ -235,8 +235,10 @@ model ThemeSettings {
 model SpecialDayTheme {
   id                 String   @id @default(uuid())
   name               String                      // "Birthday", "New Year", "Work Anniversary"
-  month              Int                         // 1-12
-  day                Int                         // 1-31
+  month              Int?                        // 1-12 (yearly repeat mode; null for one-time themes)
+  day                Int?                        // 1-31 (yearly repeat mode; null for one-time themes)
+  startsAt           DateTime?                   // one-time mode: exact start date & time
+  endsAt             DateTime?                   // one-time mode: end of the chosen day (midnight)
   isActive           Boolean  @default(true)
   primaryColor       String   @default("#f43f5e")
   accentColor        String   @default("#f59e0b")

@@ -1,6 +1,8 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { SpecialDayParticles } from '@/components/special-day-particles'
+import { CelebrationBanner } from '@/components/celebration-banner'
 
 export interface SpecialDayConfig {
   id: string
@@ -61,6 +63,36 @@ export function ThemeProvider({
 
   const isSpecialDay = theme.specialDay !== null
 
+  // Resolve the active special-day theme live so it turns on/off at the right
+  // moment regardless of when static pages were built.
+  useEffect(() => {
+    let cancelled = false
+
+    const syncSpecialDay = async () => {
+      try {
+        const res = await fetch('/api/special-day')
+        if (!res.ok || cancelled) return
+        const data = await res.json()
+        const incoming: SpecialDayConfig | null = data.theme ?? null
+        if (cancelled) return
+        setThemeState((prev) => {
+          if (JSON.stringify(prev.specialDay) === JSON.stringify(incoming)) return prev
+          return { ...prev, specialDay: incoming }
+        })
+      } catch {
+        // network error — keep the current theme
+      }
+    }
+
+    syncSpecialDay()
+    const interval = setInterval(syncSpecialDay, 5 * 60 * 1000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
+  }, [])
+
+
   useEffect(() => {
     const root = document.documentElement
 
@@ -111,7 +143,22 @@ export function ThemeProvider({
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleMode, isSpecialDay }}>
+      {theme.specialDay && (
+        <CelebrationBanner
+          greetingMessage={theme.specialDay.greetingMessage}
+          celebrationBanner={theme.specialDay.celebrationBanner}
+          primaryColor={theme.specialDay.primaryColor}
+          accentColor={theme.specialDay.accentColor}
+        />
+      )}
       {children}
+      {theme.specialDay && (
+        <SpecialDayParticles
+          effect={theme.specialDay.particleEffect}
+          primaryColor={theme.specialDay.primaryColor}
+          accentColor={theme.specialDay.accentColor}
+        />
+      )}
     </ThemeContext.Provider>
   )
 }

@@ -38,15 +38,17 @@ const PARTICLE_COLORS_SNOWFLAKES = [
   '#ffffff', '#e2e8f0', '#cbd5e1', '#f1f5f9', '#dbeafe',
 ]
 
-function getColors(effect: string): string[] {
+function getColors(effect: string, primaryColor?: string, accentColor?: string): string[] {
+  let base: string[]
   switch (effect) {
-    case 'confetti': return PARTICLE_COLORS_CONFETTI
-    case 'sparkles': return PARTICLE_COLORS_SPARKLES
-    case 'stars': return PARTICLE_COLORS_STARS
-    case 'hearts': return PARTICLE_COLORS_HEARTS
-    case 'snowflakes': return PARTICLE_COLORS_SNOWFLAKES
-    default: return PARTICLE_COLORS_CONFETTI
+    case 'sparkles': base = PARTICLE_COLORS_SPARKLES; break
+    case 'stars': base = PARTICLE_COLORS_STARS; break
+    case 'hearts': base = PARTICLE_COLORS_HEARTS; break
+    case 'snowflakes': base = PARTICLE_COLORS_SNOWFLAKES; break
+    default: base = PARTICLE_COLORS_CONFETTI
   }
+  if (effect === 'snowflakes') return base
+  return [primaryColor, accentColor, ...base].filter((c): c is string => Boolean(c))
 }
 
 function getShape(effect: string): Particle['shape'] {
@@ -193,7 +195,7 @@ export function SpecialDayParticles({
   const particlesRef = useRef<Particle[]>([])
   const animFrameRef = useRef<number>(0)
 
-  const colors = getColors(effect)
+  const colors = getColors(effect, primaryColor, accentColor)
 
   useEffect(() => {
     const animate = () => {

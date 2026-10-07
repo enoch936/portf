@@ -3,8 +3,10 @@ import { prisma } from '@/lib/prisma'
 export interface SpecialDayConfig {
   id: string
   name: string
-  month: number
-  day: number
+  month: number | null
+  day: number | null
+  startsAt: Date | null
+  endsAt: Date | null
   isActive: boolean
   primaryColor: string
   accentColor: string
@@ -15,6 +17,40 @@ export interface SpecialDayConfig {
   animationPreset: string
 }
 
+function toConfig(match: {
+  id: string
+  name: string
+  month: number | null
+  day: number | null
+  startsAt: Date | null
+  endsAt: Date | null
+  isActive: boolean
+  primaryColor: string
+  accentColor: string
+  backgroundGradient: string
+  particleEffect: string
+  greetingMessage: string
+  celebrationBanner: string | null
+  animationPreset: string
+}): SpecialDayConfig {
+  return {
+    id: match.id,
+    name: match.name,
+    month: match.month,
+    day: match.day,
+    startsAt: match.startsAt,
+    endsAt: match.endsAt,
+    isActive: match.isActive,
+    primaryColor: match.primaryColor,
+    accentColor: match.accentColor,
+    backgroundGradient: match.backgroundGradient,
+    particleEffect: match.particleEffect,
+    greetingMessage: match.greetingMessage,
+    celebrationBanner: match.celebrationBanner,
+    animationPreset: match.animationPreset,
+  }
+}
+
 export async function getActiveSpecialDayTheme(): Promise<SpecialDayConfig | null> {
   const now = new Date()
   const currentMonth = now.getMonth() + 1
@@ -23,9 +59,14 @@ export async function getActiveSpecialDayTheme(): Promise<SpecialDayConfig | nul
   const match = await prisma.specialDayTheme.findFirst({
     where: {
       isActive: true,
-      month: currentMonth,
-      day: currentDay,
+      OR: [
+        // Yearly repeat mode: matches this month & day every year
+        { month: currentMonth, day: currentDay },
+        // One-time exact mode: matches between the chosen start and end of that day
+        { startsAt: { lte: now }, endsAt: { gte: now } },
+      ],
     },
+    orderBy: { createdAt: 'desc' },
   })
 
   if (!match) {
@@ -48,20 +89,7 @@ export async function getActiveSpecialDayTheme(): Promise<SpecialDayConfig | nul
           },
         })
 
-        return {
-          id: sample.id,
-          name: sample.name,
-          month: sample.month,
-          day: sample.day,
-          isActive: sample.isActive,
-          primaryColor: sample.primaryColor,
-          accentColor: sample.accentColor,
-          backgroundGradient: sample.backgroundGradient,
-          particleEffect: sample.particleEffect,
-          greetingMessage: sample.greetingMessage,
-          celebrationBanner: sample.celebrationBanner,
-          animationPreset: sample.animationPreset,
-        }
+        return toConfig(sample)
       } catch (e) {
         // ignore errors and fall through to return null
         console.warn('Could not create dev special-day theme:', e)
@@ -70,39 +98,13 @@ export async function getActiveSpecialDayTheme(): Promise<SpecialDayConfig | nul
     return null
   }
 
-  return {
-    id: match.id,
-    name: match.name,
-    month: match.month,
-    day: match.day,
-    isActive: match.isActive,
-    primaryColor: match.primaryColor,
-    accentColor: match.accentColor,
-    backgroundGradient: match.backgroundGradient,
-    particleEffect: match.particleEffect,
-    greetingMessage: match.greetingMessage,
-    celebrationBanner: match.celebrationBanner,
-    animationPreset: match.animationPreset,
-  }
+  return toConfig(match)
 }
 
 export async function getAllSpecialDayThemes(): Promise<SpecialDayConfig[]> {
   const all = await prisma.specialDayTheme.findMany({
-    orderBy: [{ month: 'asc' }, { day: 'asc' }],
+    orderBy: [{ month: { sort: 'asc', nulls: 'last' } }, { day: 'asc' }, { createdAt: 'desc' }],
   })
 
-  return all.map((m) => ({
-    id: m.id,
-    name: m.name,
-    month: m.month,
-    day: m.day,
-    isActive: m.isActive,
-    primaryColor: m.primaryColor,
-    accentColor: m.accentColor,
-    backgroundGradient: m.backgroundGradient,
-    particleEffect: m.particleEffect,
-    greetingMessage: m.greetingMessage,
-    celebrationBanner: m.celebrationBanner,
-    animationPreset: m.animationPreset,
-  }))
+  return all.map(toConfig)
 }

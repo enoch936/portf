@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { getAuthSession } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import type { Prisma, SpecialDayTheme as SpecialDayThemeModel } from '@prisma/client'
 
 async function checkAdminAuth() {
   const session = await getAuthSession()
@@ -229,60 +230,118 @@ export async function deleteBlogPostAction(id: string) {
 }
 
 // ================= SPECIAL DAY THEME ACTIONS =================
+function errorMessage(e: unknown): string {
+  return e instanceof Error ? e.message : 'Unexpected server error'
+}
+
+function scheduleError(month: number | null | undefined, day: number | null | undefined, startsAt: string | null | undefined): string | null {
+  if (!startsAt && (month == null || day == null)) {
+    return 'Choose a yearly month & day, or an exact date & time'
+  }
+  if (startsAt && Number.isNaN(new Date(startsAt).getTime())) {
+    return 'Invalid start date & time'
+  }
+  return null
+}
+
 export async function getSpecialDayThemesAction() {
   return prisma.specialDayTheme.findMany({
-    orderBy: [{ month: 'asc' }, { day: 'asc' }],
+    orderBy: [{ month: { sort: 'asc', nulls: 'last' } }, { day: 'asc' }, { createdAt: 'desc' }],
   })
 }
 
 export async function createSpecialDayThemeAction(data: {
   name: string
-  month: number
-  day: number
+  month?: number | null
+  day?: number | null
+  startsAt?: string | null
+  endsAt?: string | null
   isActive: boolean
   primaryColor: string
   accentColor: string
   backgroundGradient: string
   particleEffect: string
   greetingMessage: string
-  celebrationBanner?: string
+  celebrationBanner?: string | null
   animationPreset: string
-}) {
-  await checkAdminAuth()
-  const theme = await prisma.specialDayTheme.create({ data })
-  revalidatePath('/admin/theme')
-  return { success: true, theme }
+}): Promise<{ success: true; theme: SpecialDayThemeModel } | { success: false; error: string }> {
+  try {
+    await checkAdminAuth()
+    const error = scheduleError(data.month, data.day, data.startsAt)
+    if (error) return { success: false, error }
+    const theme = await prisma.specialDayTheme.create({
+      data: {
+        ...data,
+        month: data.month ?? null,
+        day: data.day ?? null,
+        startsAt: data.startsAt ? new Date(data.startsAt) : null,
+        endsAt: data.endsAt ? new Date(data.endsAt) : null,
+      },
+    })
+    revalidatePath('/admin/theme')
+    revalidatePath('/', 'layout')
+    return { success: true, theme }
+  } catch (e) {
+    return { success: false, error: errorMessage(e) }
+  }
 }
 
 export async function updateSpecialDayThemeAction(
   id: string,
   data: {
     name?: string
-    month?: number
-    day?: number
+    month?: number | null
+    day?: number | null
+    startsAt?: string | null
+    endsAt?: string | null
     isActive?: boolean
     primaryColor?: string
     accentColor?: string
     backgroundGradient?: string
     particleEffect?: string
     greetingMessage?: string
-    celebrationBanner?: string
+    celebrationBanner?: string | null
     animationPreset?: string
   }
-) {
-  await checkAdminAuth()
-  const theme = await prisma.specialDayTheme.update({ where: { id }, data })
-  revalidatePath('/admin/theme')
-  revalidatePath('/', 'layout')
-  return { success: true, theme }
+): Promise<{ success: true; theme: SpecialDayThemeModel } | { success: false; error: string }> {
+  try {
+    await checkAdminAuth()
+    const hasSchedule =
+      data.month !== undefined || data.day !== undefined || data.startsAt !== undefined || data.endsAt !== undefined
+    if (hasSchedule) {
+      const error = scheduleError(data.month, data.day, data.startsAt)
+      if (error) return { success: false, error }
+    }
+    const { month, day, startsAt, endsAt, ...rest } = data
+    const payload: Prisma.SpecialDayThemeUpdateInput = { ...rest }
+    if (hasSchedule) {
+      payload.month = month ?? null
+      payload.day = day ?? null
+      payload.startsAt = startsAt ? new Date(startsAt) : null
+      payload.endsAt = endsAt ? new Date(endsAt) : null
+    }
+    const theme = await prisma.specialDayTheme.update({ where: { id }, data: payload })
+    revalidatePath('/admin/theme')
+    revalidatePath('/', 'layout')
+    return { success: true, theme }
+  } catch (e) {
+    return { success: false, error: errorMessage(e) }
+  }
 }
 
-export async function deleteSpecialDayThemeAction(id: string) {
-  await checkAdminAuth()
-  await prisma.specialDayTheme.delete({ where: { id } })
-  revalidatePath('/admin/theme')
-  revalidatePath('/', 'layout')
-  return { success: true }
+export async function deleteSpecialDayThemeAction(
+  id: string
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await checkAdminAuth()
+    await prisma.specialDayTheme.delete({ where: { id } })
+    revalidatePath('/admin/theme')
+    revalidatePath('/', 'layout')
+    return { success: true }
+  } catch (e) {
+    if ((e as { code?: string }).code === 'P2025') return { success: true }
+    return { success: false, error: errorMessage(e) }
+  }
 }
 
 // ================= THEME & WEBSITE SETTINGS ACTIONS =================
