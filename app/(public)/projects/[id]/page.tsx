@@ -19,7 +19,7 @@ export default async function ProjectDetailPage({
       technologies: true,
       images: { orderBy: { order: 'asc' } },
     },
-  })
+  }).catch(() => null)
 
   if (!project) {
     notFound()
@@ -30,12 +30,12 @@ export default async function ProjectDetailPage({
       where: { rank: { lt: project.rank } },
       orderBy: { rank: 'desc' },
       select: { id: true, title: true, thumbnail: true, category: true },
-    }),
+    }).catch(() => null),
     prisma.project.findFirst({
       where: { rank: { gt: project.rank } },
       orderBy: { rank: 'asc' },
       select: { id: true, title: true, thumbnail: true, category: true },
-    }),
+    }).catch(() => null),
   ])
 
   let features: string[] = []

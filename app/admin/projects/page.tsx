@@ -6,7 +6,7 @@ export default async function AdminProjectsPage() {
   const projects = await prisma.project.findMany({
     orderBy: { rank: 'asc' },
     include: { technologies: true },
-  })
+  }).catch(() => [])
 
   return (
     <div className="space-y-6">

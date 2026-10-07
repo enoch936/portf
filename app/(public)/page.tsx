@@ -7,10 +7,10 @@ import { ArrowRight, Download, Mail, Code2, ShieldCheck, Layers3, MapPin } from 
 
 export default async function HomePage() {
   const [profile, featuredProjects, skillsCount, experiences] = await Promise.all([
-    prisma.profile.findFirst({ include: { socialLinks: { orderBy: { order: 'asc' } } } }),
-    prisma.project.findMany({ where: { featured: true }, orderBy: { rank: 'asc' }, take: 3, include: { technologies: true } }),
-    prisma.skill.count(),
-    prisma.experience.findMany({ orderBy: { order: 'asc' } }),
+    prisma.profile.findFirst({ include: { socialLinks: { orderBy: { order: 'asc' } } } }).catch(() => null),
+    prisma.project.findMany({ where: { featured: true }, orderBy: { rank: 'asc' }, take: 3, include: { technologies: true } }).catch(() => []),
+    prisma.skill.count().catch(() => 0),
+    prisma.experience.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
   ])
 
   const name = profile?.name || 'Gebretsadik M. Engida'

@@ -10,7 +10,7 @@ export default async function BlogPage() {
     where: { published: true },
     orderBy: { createdAt: 'desc' },
     include: { category: true },
-  })
+  }).catch(() => [])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-8">

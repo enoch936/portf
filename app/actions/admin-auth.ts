@@ -44,8 +44,9 @@ export async function loginAdminAction(formData: FormData) {
 
     return { success: true }
   } catch (error) {
-    console.error('Error logging in admin:', error)
-    return { success: false, error: 'An unexpected error occurred.' }
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error logging in admin:', message, error instanceof Error ? error.stack : '')
+    return { success: false, error: 'An unexpected error occurred. Please check the server logs.' }
   }
 }
 

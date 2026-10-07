@@ -5,10 +5,12 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Briefcase, GraduationCap, Award, Compass, CheckCircle2, Calendar, MapPin } from 'lucide-react'
 
 export default async function AboutPage() {
-  const profile = await prisma.profile.findFirst()
-  const experiences = await prisma.experience.findMany({ orderBy: { order: 'asc' } })
-  const educations = await prisma.education.findMany({ orderBy: { order: 'asc' } })
-  const certifications = await prisma.certification.findMany({ orderBy: { order: 'asc' } })
+  const [profile, experiences, educations, certifications] = await Promise.all([
+    prisma.profile.findFirst().catch(() => null),
+    prisma.experience.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+    prisma.education.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+    prisma.certification.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
+  ])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 py-8">

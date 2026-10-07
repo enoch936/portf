@@ -8,7 +8,7 @@ import { Mail, MapPin, Phone, MessageSquare, ShieldCheck, Sparkles } from 'lucid
 export default async function ContactPage() {
   const profile = await prisma.profile.findFirst({
     include: { socialLinks: { orderBy: { order: 'asc' } } },
-  })
+  }).catch(() => null)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-8">
