@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { motion, HTMLMotionProps } from 'framer-motion'
+import { motion, useReducedMotion, HTMLMotionProps } from 'framer-motion'
 import { clsx } from 'clsx'
 
 interface GlassCardProps extends HTMLMotionProps<'div'> {
@@ -10,14 +10,25 @@ interface GlassCardProps extends HTMLMotionProps<'div'> {
   glowOnHover?: boolean
 }
 
-export function GlassCard({ children, className, glowOnHover = false, ...props }: GlassCardProps) {
+export function GlassCard({ children, className, glowOnHover = false, onMouseMove, ...props }: GlassCardProps) {
+  const reduce = useReducedMotion()
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+    onMouseMove?.(e)
+  }
+
   return (
     <motion.div
-      className={clsx(
-        'glass-card p-6 relative overflow-hidden transition-all duration-300',
-        glowOnHover && 'glass-glow',
-        className
-      )}
+      className={clsx('glass-card spotlight p-6 relative overflow-hidden', glowOnHover && 'card-gradient', className)}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
+      whileHover={glowOnHover && !reduce ? { y: -4 } : undefined}
+      onMouseMove={handleMove}
       {...props}
     >
       {children}

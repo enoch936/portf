@@ -46,7 +46,7 @@ export default async function BlogPage() {
                     src={post.coverImage}
                     alt={post.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   />
                   {post.category && (
                     <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-mono text-purple-300 border border-white/10">

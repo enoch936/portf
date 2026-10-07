@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
+import { Reveal } from '@/components/motion'
 import { Briefcase, GraduationCap, Award, Compass, CheckCircle2, Calendar, MapPin } from 'lucide-react'
 
 export default async function AboutPage() {
@@ -15,7 +16,7 @@ export default async function AboutPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 py-8">
       {/* Page Title */}
-      <div className="space-y-4 text-center max-w-3xl mx-auto">
+      <Reveal className="space-y-4 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
           <Compass className="w-3.5 h-3.5" />
           <span>CAREER JOURNEY & PHILOSOPHY</span>
@@ -26,7 +27,7 @@ export default async function AboutPage() {
         <p className="text-gray-400 text-base sm:text-lg">
           Senior Software Engineer, System Architect, Freelance Advisory Consultant, and Tech Entrepreneur.
         </p>
-      </div>
+      </Reveal>
 
       {/* Bio & Philosophy Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
