@@ -114,8 +114,20 @@ export function AdminSpecialDayThemes({ initialThemes }: { initialThemes?: Speci
   }
 
   useEffect(() => {
-    loadThemes()
-  }, [])
+    if (initialThemes) return
+    let cancelled = false
+    getSpecialDayThemesAction()
+      .then((data) => {
+        if (cancelled) return
+        setThemes(data as SpecialDayTheme[])
+        setLoading(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [initialThemes])
 
   const resetForm = () => {
     setFormName('')

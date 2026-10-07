@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useCallback } from 'react'
+import React, { useRef, useEffect } from 'react'
 
 interface Particle {
   x: number
@@ -195,56 +195,56 @@ export function SpecialDayParticles({
 
   const colors = getColors(effect)
 
-  const animate = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  useEffect(() => {
+    const animate = () => {
+      const canvas = canvasRef.current
+      if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    if (particlesRef.current.length < particleCount) {
-      particlesRef.current.push(createParticle(canvas, effect, colors))
+      if (particlesRef.current.length < particleCount) {
+        particlesRef.current.push(createParticle(canvas, effect, colors))
+      }
+
+      particlesRef.current = particlesRef.current.filter((p) => {
+        p.life++
+        p.x += p.vx
+        p.y += p.vy
+        p.rotation += p.rotationSpeed
+
+        if (effect === 'confetti') {
+          p.vx *= 0.99
+          p.vy += 0.02
+        }
+
+        if (effect === 'sparkles') {
+          p.opacity = 0.3 + Math.abs(Math.sin(p.life * 0.1)) * 0.7
+        }
+
+        if (effect === 'snowflakes') {
+          p.x += Math.sin(p.life * 0.02) * 0.3
+        }
+
+        if (p.life >= p.maxLife || p.y > canvas.height + 20 || p.y < -20) {
+          return false
+        }
+
+        drawParticle(ctx, p)
+        return true
+      })
+
+      animFrameRef.current = requestAnimationFrame(animate)
     }
 
-    particlesRef.current = particlesRef.current.filter((p) => {
-      p.life++
-      p.x += p.vx
-      p.y += p.vy
-      p.rotation += p.rotationSpeed
-
-      if (effect === 'confetti') {
-        p.vx *= 0.99
-        p.vy += 0.02
-      }
-
-      if (effect === 'sparkles') {
-        p.opacity = 0.3 + Math.abs(Math.sin(p.life * 0.1)) * 0.7
-      }
-
-      if (effect === 'snowflakes') {
-        p.x += Math.sin(p.life * 0.02) * 0.3
-      }
-
-      if (p.life >= p.maxLife || p.y > canvas.height + 20 || p.y < -20) {
-        return false
-      }
-
-      drawParticle(ctx, p)
-      return true
-    })
-
-    animFrameRef.current = requestAnimationFrame(animate)
-  }, [effect, particleCount, colors])
-
-  useEffect(() => {
     animFrameRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(animFrameRef.current)
-  }, [animate])
+  }, [effect, particleCount, colors])
 
   return (
     <canvas
