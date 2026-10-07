@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
+import { Reveal } from '@/components/motion'
 import { ArrowRight, ExternalLink, Code2 as Github, Layers, Search } from 'lucide-react'
 import { Prisma } from '@prisma/client'
 
@@ -41,7 +42,7 @@ export default async function ProjectsPage({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-8">
       {/* Header */}
-      <div className="space-y-4 text-center max-w-3xl mx-auto">
+      <Reveal className="space-y-4 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
           <Layers className="w-3.5 h-3.5" />
           <span>ENGINEERING PORTFOLIO</span>
@@ -52,10 +53,10 @@ export default async function ProjectsPage({
         <p className="text-gray-400 text-base sm:text-lg">
           Explore distributed platforms, AI infrastructure, enterprise backends, and full-stack SaaS applications.
         </p>
-      </div>
+      </Reveal>
 
       {/* Category Filter Pills & Search */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 control-surface p-4 rounded-2xl">
         <div className="flex flex-wrap items-center gap-2">
           {categories.map((cat) => {
             const isSelected = (!category && cat === 'All') || category === cat
@@ -66,7 +67,7 @@ export default async function ProjectsPage({
                 href={href}
                 className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
                   isSelected
-                    ? 'bg-blue-600 text-white shadow-md'
+                    ? 'btn-primary on-dark shadow-md'
                     : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -99,7 +100,7 @@ export default async function ProjectsPage({
                   src={project.thumbnail}
                   alt={project.title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-[10px] font-mono text-blue-400 border border-white/10">
                   {project.category}

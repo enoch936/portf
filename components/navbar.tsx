@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from './theme-provider'
 import { Sun, Moon, Menu, X, Shield } from 'lucide-react'
 
@@ -25,119 +26,150 @@ export function Navbar({ navItems = defaultNavItems }: { navItems?: NavItem[] })
   const pathname = usePathname()
   const { theme, toggleMode } = useTheme()
   const [scrolled, setScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [hovered, setHovered] = useState<string | null>(null)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 16)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'site-header-surface py-3 shadow-sm'
-          : 'bg-transparent py-5'
-      }`}
+  useEffect(() => setOpen(false), [pathname])
+
+  const isLight = theme.themeMode === 'light'
+  const ThemeToggle = ({ className = '' }: { className?: string }) => (
+    <button
+      onClick={toggleMode}
+      className={`control-surface grid place-items-center w-10 h-10 rounded-xl text-gray-500 hover:text-slate-950 dark:hover:text-white transition-colors overflow-hidden ${className}`}
+      title="Toggle theme"
+      aria-label="Toggle theme"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="brand-mark" aria-hidden="true">
-            GE
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight gradient-text">Gebretsadik</span>
-            <span className="text-[10px] text-gray-400 font-mono tracking-wider uppercase">Senior Architect</span>
-          </div>
-        </Link>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={isLight ? 'moon' : 'sun'}
+          initial={{ y: 14, rotate: -80, opacity: 0 }}
+          animate={{ y: 0, rotate: 0, opacity: 1 }}
+          exit={{ y: -14, rotate: 80, opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="grid place-items-center"
+        >
+          {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
+        </motion.span>
+      </AnimatePresence>
+    </button>
+  )
 
-        {/* Desktop Nav Items */}
-        <nav className="hidden md:flex items-center gap-1 nav-surface rounded-full px-2 py-1.5">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-gray-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'
-                }`}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Action Controls */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleMode}
-            className="control-surface p-2.5 rounded-xl text-gray-500 hover:text-slate-950 dark:hover:text-white transition-all duration-200"
-            title="Toggle theme"
-          >
-            {theme.themeMode === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
-          </button>
-
-          {/* Admin CMS Access */}
-          <Link
-            href="/admin"
-            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl admin-link transition-all duration-200"
-          >
-            <Shield className="w-3.5 h-3.5 text-blue-400" />
-            <span>Admin CMS</span>
+  return (
+    <motion.header
+      initial={{ y: -90, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="fixed top-0 inset-x-0 z-50 px-3 sm:px-5 pt-3"
+    >
+      <div
+        className={`nav-shell mx-auto max-w-7xl rounded-2xl px-3 sm:px-4 ${scrolled || open ? 'is-scrolled py-2' : 'py-3'} ${open ? 'is-open' : ''}`}
+      >
+        <div className="flex items-center justify-between gap-4">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <motion.div whileHover={{ rotate: -8, scale: 1.08 }} transition={{ type: 'spring', stiffness: 300, damping: 14 }} className="brand-mark" aria-hidden="true">
+              GE
+            </motion.div>
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-lg tracking-tight gradient-text">Gebretsadik</span>
+              <span className="text-[10px] text-gray-400 font-mono tracking-wider uppercase">Senior Architect</span>
+            </div>
           </Link>
-        </div>
 
-        {/* Mobile Menu Toggle Button */}
-        <div className="flex md:hidden items-center gap-2">
-          <button
-            onClick={toggleMode}
-            className="control-surface p-2 rounded-lg text-gray-500 dark:text-gray-300"
-          >
-            {theme.themeMode === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="control-surface p-2 rounded-lg text-gray-500 dark:text-gray-300"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-0.5 nav-surface rounded-full p-1" onMouseLeave={() => setHovered(null)}>
+            {navItems.map((item) => {
+              const active = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onMouseEnter={() => setHovered(item.href)}
+                  className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                    active ? 'text-white' : 'text-gray-500 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white'
+                  }`}
+                >
+                  {hovered === item.href && !active && (
+                    <motion.span layoutId="nav-hover" className="absolute inset-0 rounded-full bg-black/5 dark:bg-white/10" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                  )}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-full btn-primary-surface"
+                      style={{ background: 'linear-gradient(135deg, var(--brand-1), var(--brand-2))', boxShadow: '0 8px 22px -8px color-mix(in srgb, var(--brand-1) 70%, transparent)' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className={`relative z-10 ${active ? 'on-dark' : ''}`}>{item.label}</span>
+                </Link>
+              )
+            })}
+          </nav>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden mobile-nav-surface px-4 pt-4 pb-6 mt-2 flex flex-col gap-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`px-4 py-2.5 rounded-xl text-base font-medium transition-colors ${
-                pathname === item.href ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-            >
-              {item.label}
+          {/* Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/admin" className="admin-link flex items-center gap-2 px-4 h-10 text-xs font-semibold rounded-xl transition-all duration-200">
+              <Shield className="w-3.5 h-3.5 text-blue-400" />
+              <span>Admin CMS</span>
             </Link>
-          ))}
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="mt-2 flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm"
-          >
-            <Shield className="w-4 h-4" />
-            Admin CMS Portal
-          </Link>
+          </div>
+
+          {/* Mobile controls */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setOpen(!open)}
+              className="control-surface grid place-items-center w-10 h-10 rounded-xl text-gray-500 dark:text-gray-300"
+              aria-label="Toggle menu"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span key={open ? 'x' : 'm'} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
+              className="md:hidden overflow-hidden"
+            >
+              <div className="pt-4 pb-2 flex flex-col gap-1.5">
+                {navItems.map((item, i) => (
+                  <motion.div key={item.href} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.05 + i * 0.045 }}>
+                    <Link
+                      href={item.href}
+                      className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                        pathname === item.href ? 'btn-primary on-dark' : 'text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+                <Link href="/admin" className="mt-2 btn btn-ghost w-full">
+                  <Shield className="w-4 h-4" /> Admin CMS Portal
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
   )
 }

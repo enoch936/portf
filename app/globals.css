@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Make dark: utilities follow the site theme toggle (.dark class), not the OS */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --background: 240 10% 4%;
@@ -529,4 +532,178 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* =====================================================================
+   v2 DESIGN SYSTEM — clean SaaS look, aurora depth, rich motion
+   Colors follow the CMS theme (--primary-color / --accent-color).
+   ===================================================================== */
+:root {
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --brand-1: var(--primary-color, #3b82f6);
+  --brand-2: var(--accent-color, #8b5cf6);
+  --ease-out: cubic-bezier(.21, .47, .32, .98);
+}
+
+h1, h2, h3 { font-family: var(--font-display); }
+h1 { letter-spacing: -0.035em; }
+h2 { letter-spacing: -0.025em; }
+
+/* ---------- Ambient backdrop ---------- */
+.site-backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.site-backdrop .blob {
+  position: absolute; border-radius: 9999px; filter: blur(110px); opacity: .5;
+  will-change: transform; animation: drift 22s ease-in-out infinite alternate;
+}
+.site-backdrop .blob-1 { width: 46rem; height: 46rem; top: -18rem; left: -12rem; background: color-mix(in srgb, var(--brand-1) 38%, transparent); }
+.site-backdrop .blob-2 { width: 40rem; height: 40rem; top: 8rem; right: -14rem; background: color-mix(in srgb, var(--brand-2) 32%, transparent); animation-duration: 28s; animation-delay: -6s; }
+.site-backdrop .blob-3 { width: 34rem; height: 34rem; bottom: -14rem; left: 28%; background: color-mix(in srgb, var(--brand-1) 20%, transparent); animation-duration: 34s; animation-delay: -12s; }
+.light .site-backdrop .blob { opacity: .32; }
+.site-backdrop .grid-lines {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, #000 25%, transparent 75%);
+}
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(5vw, 6vh, 0) scale(1.12); }
+  100% { transform: translate3d(-4vw, 3vh, 0) scale(.94); }
+}
+
+/* ---------- Surfaces ---------- */
+.glass-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + .35rem);
+  transition: border-color .4s var(--ease-out), box-shadow .4s var(--ease-out), background .4s var(--ease-out);
+}
+.glass-card:hover { border-color: color-mix(in srgb, var(--brand-1) 35%, var(--line)); }
+
+/* cursor spotlight inside cards */
+.spotlight::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--brand-1) 16%, transparent), transparent 60%);
+  transition: opacity .35s var(--ease-out);
+}
+.spotlight:hover::after { opacity: 1; }
+
+/* animated gradient border on hover */
+.card-gradient::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, var(--brand-1), transparent 45%, var(--brand-2));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; top: 0; left: 0; right: 0; bottom: 0;
+  transition: opacity .45s var(--ease-out);
+}
+.card-gradient:hover::before { opacity: 1; }
+.card-gradient:hover { box-shadow: 0 28px 70px -28px color-mix(in srgb, var(--brand-1) 55%, transparent); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  padding: .85rem 1.35rem; border-radius: .9rem; font-size: .875rem; font-weight: 600;
+  overflow: hidden; isolation: isolate; cursor: pointer; white-space: nowrap;
+  transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out), background .3s, border-color .3s;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--brand-1) 70%, transparent), inset 0 1px 0 rgba(255,255,255,.25);
+}
+.btn-primary::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; transform: translateX(-120%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  transition: transform .8s var(--ease-out);
+}
+.btn-primary:hover { box-shadow: 0 18px 44px -12px color-mix(in srgb, var(--brand-1) 80%, transparent), inset 0 1px 0 rgba(255,255,255,.3); }
+.btn-primary:hover::after { transform: translateX(120%) skewX(-18deg); }
+.btn-ghost {
+  color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.btn-ghost:hover { border-color: color-mix(in srgb, var(--brand-1) 45%, var(--line)); background: var(--panel-strong); }
+.btn-ghost .arrow, .btn-primary .arrow { transition: transform .3s var(--ease-out); }
+.btn:hover .arrow { transform: translateX(4px); }
+.btn-light { background: #fff; color: #0b1220; box-shadow: 0 14px 40px -14px rgba(0,0,0,.5); }
+.btn-light:hover { transform: translateY(-2px); }
+
+/* ---------- Text effects ---------- */
+.gradient-text {
+  background: linear-gradient(100deg, var(--brand-1), var(--brand-2), var(--brand-1));
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: gradient-pan 7s linear infinite;
+}
+@keyframes gradient-pan { to { background-position: 220% 0; } }
+.on-dark { color: #fff; }
+.eyebrow {
+  display: flex; width: fit-content; align-items: center; gap: .5rem; font-size: .72rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--brand-1);
+}
+.eyebrow::before { content: ''; width: 1.6rem; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); }
+
+/* ---------- Status dot ---------- */
+.pulse-dot { position: relative; width: .5rem; height: .5rem; border-radius: 9999px; background: #10b981; }
+.pulse-dot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: #10b981; animation: ping 1.8s cubic-bezier(0,0,.2,1) infinite; }
+@keyframes ping { 75%, 100% { transform: scale(3.2); opacity: 0; } }
+
+/* ---------- Marquee ---------- */
+.marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.marquee-track { display: flex; width: max-content; gap: .75rem; animation: marquee 42s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-chip {
+  display: inline-flex; align-items: center; gap: .55rem; padding: .55rem 1rem; border-radius: 9999px; font-size: .8rem; font-weight: 600;
+  color: var(--soft-ink); background: var(--panel); border: 1px solid var(--line);
+}
+.marquee-dot { width: .4rem; height: .4rem; border-radius: 9999px; background: linear-gradient(135deg, var(--brand-1), var(--brand-2)); }
+@keyframes marquee { to { transform: translateX(calc(-50% - .375rem)); } }
+
+/* ---------- Skill bars ---------- */
+.bar-fill { background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); box-shadow: 0 0 14px color-mix(in srgb, var(--brand-1) 60%, transparent); }
+
+/* ---------- Floating chips / bento ---------- */
+.float-chip {
+  background: var(--panel-strong); border: 1px solid var(--line); border-radius: 1rem;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -16px rgba(10, 20, 40, .35);
+}
+.icon-tile {
+  display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: .9rem; color: #fff;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--brand-1) 70%, transparent);
+}
+.cta-surface {
+  position: relative; overflow: hidden; isolation: isolate; color: #fff; border-radius: 2rem;
+  background: linear-gradient(135deg, #0b1220 0%, color-mix(in srgb, var(--brand-1) 38%, #0b1220) 55%, color-mix(in srgb, var(--brand-2) 45%, #0b1220) 100%);
+  background-size: 160% 160%; animation: cta-shift 14s ease-in-out infinite alternate;
+}
+@keyframes cta-shift { to { background-position: 100% 100%; } }
+.cta-surface::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5;
+  background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at 80% 20%, #000, transparent 70%); mask-image: radial-gradient(ellipse at 80% 20%, #000, transparent 70%);
+}
+
+/* ---------- Nav tweaks ---------- */
+.nav-shell { transition: all .5s var(--ease-out); border: 1px solid transparent; }
+.nav-shell.is-scrolled {
+  background: color-mix(in srgb, hsl(var(--background)) 82%, transparent); border-color: var(--line);
+  backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 18px 50px -22px rgba(10, 20, 40, .45);
+}
+.nav-shell.is-open { background: hsl(var(--background)); }
+.link-underline { position: relative; }
+.link-underline::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease-out); }
+.link-underline:hover::after { transform: scaleX(1); transform-origin: left; }
+
+::selection { background: color-mix(in srgb, var(--brand-1) 40%, transparent); }
+:focus-visible { outline: 2px solid var(--brand-1); outline-offset: 3px; border-radius: .5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-backdrop .blob, .gradient-text, .marquee-track, .cta-surface, .pulse-dot::after { animation: none !important; }
 }

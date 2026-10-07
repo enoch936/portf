@@ -39,9 +39,15 @@ export default async function PublicLayout({
   const visibleNavItems = navItems.filter((item) => sections[sectionByRoute[item.href]] !== false)
 
   return (
-    <div className="flex flex-col min-h-screen gradient-bg-hero">
+    <div className="relative isolate flex flex-col min-h-screen gradient-bg-hero">
+      <div className="site-backdrop" aria-hidden="true">
+        <div className="grid-lines" />
+        <span className="blob blob-1" />
+        <span className="blob blob-2" />
+        <span className="blob blob-3" />
+      </div>
       <Navbar navItems={visibleNavItems.length > 0 ? visibleNavItems : undefined} />
-      <main className="flex-1 pt-24">{children}</main>
+      <main className="flex-1 pt-28">{children}</main>
       <Footer />
       <ScrollToTop />
     </div>
