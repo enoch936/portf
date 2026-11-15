@@ -97,16 +97,6 @@ const PRESETS: Partial<SpecialDayTheme>[] = [
     celebrationBanner: 'Season\'s greetings!',
     animationPreset: 'festive',
   },
-  {
-    name: 'Work Anniversary',
-    primaryColor: '#8b5cf6',
-    accentColor: '#06b6d4',
-    backgroundGradient: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
-    particleEffect: 'stars',
-    greetingMessage: 'Happy Work Anniversary!',
-    celebrationBanner: 'Thank you for your dedication!',
-    animationPreset: 'festive',
-  },
 ]
 
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]

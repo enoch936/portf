@@ -6,17 +6,16 @@ import { getActiveSpecialDayTheme } from '@/lib/special-day'
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const website = await prisma.websiteSettings.findUnique({ where: { id: 'default' } })
     return {
-      title: website?.metaTitle || 'Gebretsadik | Senior Architect & Tech Entrepreneur',
-      description: website?.metaDescription || 'Enterprise Portfolio CMS SaaS platform',
-      keywords: ['Software Engineer', 'Systems Architect', 'Freelancer', 'Cloud Native', 'Next.js 16', 'React 19'],
-      authors: [{ name: 'Gebretsadik M. Engida' }],
+      title: 'Gebretsadik Woldesenbet | Full-Stack Software Engineer',
+      description: 'Portfolio of Gebretsadik Woldesenbet, Computer Science graduate and full-stack, mobile, and AI software engineer seeking software engineering roles.',
+      keywords: ['Software Engineer', 'Full-Stack Developer', 'Backend Engineer', 'Mobile Developer', 'AI Systems', 'Next.js', 'React'],
+      authors: [{ name: 'Gebretsadik Woldesenbet' }],
     }
   } catch {
     return {
-      title: 'Gebretsadik | Senior Architect & Tech Entrepreneur',
-      description: 'Enterprise Portfolio CMS SaaS platform',
+      title: 'Gebretsadik Woldesenbet | Full-Stack Software Engineer',
+      description: 'Portfolio of Gebretsadik Woldesenbet, full-stack, mobile, and AI software engineer.',
     }
   }
 }

@@ -68,7 +68,7 @@ export function HeroVisual({
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div className="mt-4 grid grid-cols-2 gap-2 text-center">
             {stats.map((s) => (
               <div key={s.label} className="rounded-xl py-2.5 bg-black/[.03] dark:bg-white/[.04]">
                 <p className="text-xl font-extrabold text-white font-[family-name:var(--font-display)]"><CountUp to={s.value} suffix={s.suffix} /></p>

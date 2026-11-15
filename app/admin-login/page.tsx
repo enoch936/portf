@@ -61,7 +61,6 @@ export default function AdminLoginPage() {
                 <input
                   type="email"
                   name="email"
-                  defaultValue="admin@gebretsadik.io"
                   required
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500"
                 />
@@ -75,7 +74,6 @@ export default function AdminLoginPage() {
                 <input
                   type="password"
                   name="password"
-                  defaultValue="adminpassword123"
                   required
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-blue-500"
                 />
@@ -109,9 +107,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="text-[10px] text-gray-500 font-mono text-center border-t border-white/10 pt-4">
-            Default credentials: <span className="text-gray-300">admin@gebretsadik.io</span> / <span className="text-gray-300">adminpassword123</span>
-          </div>
         </div>
       </div>
     </div>

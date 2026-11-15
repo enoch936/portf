@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from './theme-provider'
-import { Sun, Moon, Menu, X, Shield } from 'lucide-react'
+import { Sun, Moon, Menu, X } from 'lucide-react'
 
 export interface NavItem {
   label: string
@@ -79,7 +79,7 @@ export function Navbar({ navItems = defaultNavItems }: { navItems?: NavItem[] })
             </motion.div>
             <div className="flex flex-col leading-tight">
               <span className="font-bold text-lg tracking-tight gradient-text">Gebretsadik</span>
-              <span className="text-[10px] text-gray-400 font-mono tracking-wider uppercase">Senior Architect</span>
+              <span className="text-[10px] text-gray-400 font-mono tracking-wider uppercase">Software Engineer</span>
             </div>
           </Link>
 
@@ -116,10 +116,6 @@ export function Navbar({ navItems = defaultNavItems }: { navItems?: NavItem[] })
           {/* Actions */}
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/admin" className="admin-link flex items-center gap-2 px-4 h-10 text-xs font-semibold rounded-xl transition-all duration-200">
-              <Shield className="w-3.5 h-3.5 text-blue-400" />
-              <span>Admin CMS</span>
-            </Link>
           </div>
 
           {/* Mobile controls */}
@@ -162,9 +158,6 @@ export function Navbar({ navItems = defaultNavItems }: { navItems?: NavItem[] })
                     </Link>
                   </motion.div>
                 ))}
-                <Link href="/admin" className="mt-2 btn btn-ghost w-full">
-                  <Shield className="w-4 h-4" /> Admin CMS Portal
-                </Link>
               </div>
             </motion.div>
           )}

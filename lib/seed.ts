@@ -7,7 +7,11 @@ async function main() {
   console.log('🌱 Starting database seed...')
 
   // 1. Admin User
-  const passwordHash = await bcrypt.hash('adminpassword123', 10)
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword || adminPassword.length < 12) {
+    throw new Error('Set ADMIN_PASSWORD (at least 12 characters) before seeding.')
+  }
+  const passwordHash = await bcrypt.hash(adminPassword, 10)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@gebretsadik.io' },
     update: {},
@@ -32,7 +36,7 @@ async function main() {
       avatarUrl: '/images/avatar.svg',
       heroImageUrl: '/images/hero.svg',
       location: 'Ethiopia',
-      email: 'contact@gebretsadik.io',
+      email: 'enoch3696@gmail.com',
       phone: '',
       status: 'Open for Software Engineering Roles',
       cvPdfUrl: '/documents/Gebretsadik_Senior_Architect_CV.pdf',
@@ -44,8 +48,8 @@ async function main() {
   await prisma.socialLink.createMany({
     data: [
       { profileId: profile.id, platform: 'GitHub', url: 'https://github.com/enoch936', iconName: 'Github', order: 1 },
-      { profileId: profile.id, platform: 'LinkedIn', url: 'https://linkedin.com', iconName: 'Linkedin', order: 2 },
-      { profileId: profile.id, platform: 'Email', url: 'mailto:contact@gebretsadik.io', iconName: 'Mail', order: 3 },
+      { profileId: profile.id, platform: 'LinkedIn', url: 'https://www.linkedin.com/in/gebretsadik-alehegn-3a7999430', iconName: 'Linkedin', order: 2 },
+      { profileId: profile.id, platform: 'Email', url: 'mailto:enoch3696@gmail.com', iconName: 'Mail', order: 3 },
     ],
   })
 

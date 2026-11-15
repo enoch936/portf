@@ -29,7 +29,7 @@ export default async function AdminResumePage() {
           <div className="space-y-3 text-xs">
             <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
               <div>
-                <p className="font-bold text-white">{resume?.title || 'Senior Architect CV'}</p>
+                <p className="font-bold text-white">{resume?.title || 'Resume'}</p>
                 <p className="text-gray-400 text-[10px]">PDF Link: {resume?.pdfUrl || '/documents/Gebretsadik_Senior_Architect_CV.pdf'}</p>
               </div>
               <span className="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px]">
