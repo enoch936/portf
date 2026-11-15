@@ -39,20 +39,15 @@ export default async function HomePage() {
           </Reveal>
 
           <div className="space-y-6">
-            <h1 className="text-[2.6rem] sm:text-6xl lg:text-[4.6rem] font-extrabold leading-[1.02] text-white">
-              <WordReveal
-                parts={[
-                  { text: 'Building digital products that' },
-                  { text: 'hold up.', gradient: true },
-                ]}
-              />
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white">
+              Hi, I&apos;m Gebretsadik. I build web and mobile apps.
             </h1>
             <Reveal delay={0.55} y={14}>
-              <p className="text-lg sm:text-xl font-semibold text-[var(--brand-1)]">{profile?.title || 'Full-Stack Software Engineer'}</p>
+              <p className="text-lg sm:text-xl font-semibold text-[var(--brand-1)]">Computer Science graduate, University of Gondar</p>
             </Reveal>
             <Reveal delay={0.65} y={14}>
               <p className="max-w-2xl mx-auto lg:mx-0 text-base sm:text-lg leading-8 text-gray-500 dark:text-gray-400">
-                {profile?.brandingStatement || 'I design thoughtful software, dependable platforms, and clear user experiences for ambitious teams.'}
+                I recently graduated and I am looking for my first software engineering job. I like building things people actually use, like a freelancer marketplace, chat apps, an exam system, and mobile apps.
               </p>
             </Reveal>
           </div>
@@ -86,7 +81,7 @@ export default async function HomePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={link.platform}
-                    className="grid place-items-center w-10 h-10 rounded-xl control-surface text-gray-500 hover:text-[var(--brand-1)] hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+                    className="grid place-items-center w-10 h-10 rounded-xl control-surface text-gray-500 hover:text-[var(--brand-1)] transition-colors"
                   >
                     <DynamicIcon name={link.iconName} className="w-4 h-4" />
                   </a>
@@ -98,7 +93,7 @@ export default async function HomePage() {
 
         <HeroVisual
           name={name}
-          avatarUrl={profile?.avatarUrl || '/images/avatar.svg'}
+          avatarUrl={SITE.photo}
           location={profile?.location || 'Available remotely'}
           stats={stats}
           chips={stack.slice(0, 2)}
@@ -114,20 +109,19 @@ export default async function HomePage() {
       {/* ================= VALUE BENTO ================= */}
       <section className="space-y-10">
         <Reveal className="max-w-2xl space-y-3">
-          <p className="eyebrow">How I work</p>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">Engineering that feels effortless to use.</h2>
+          <p className="eyebrow">What I do</p>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">I build the whole app, front to back.</h2>
         </Reveal>
         <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            { icon: Layers3, title: 'Product-minded engineering', text: 'From early direction to a focused, maintainable release.' },
-            { icon: Code2, title: 'Built for real use', text: 'Interfaces and services designed around people, performance, and clarity.' },
-            { icon: ShieldCheck, title: 'Reliable by design', text: 'Security, maintainability, and scale considered from the first decision.' },
+            { icon: Layers3, title: 'Web apps', text: 'Websites and dashboards with Next.js, React, Spring Boot, and NestJS, backed by PostgreSQL or MongoDB.' },
+            { icon: Code2, title: 'Mobile apps', text: 'Android and iOS apps with React Native, including offline features and file sharing.' },
+            { icon: ShieldCheck, title: 'Chat, calls and login', text: 'Real-time chat and video calls with WebSocket and WebRTC, and secure login with JWT and two-factor codes.' },
           ].map(({ icon: Icon, title, text }, i) => (
             <StaggerItem key={title}>
-              <div className="glass-card card-gradient group relative h-full p-7 overflow-hidden hover:-translate-y-1.5 transition-transform duration-500"
+              <div className="glass-card card-gradient group relative h-full p-7 overflow-hidden"
                   >
-                <span className="absolute right-5 top-4 text-6xl font-black font-[family-name:var(--font-display)] text-black/[.04] dark:text-white/[.05] select-none">0{i + 1}</span>
-                <div className="icon-tile group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500"><Icon className="w-5 h-5" /></div>
+                <div className="icon-tile"><Icon className="w-5 h-5" /></div>
                 <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
                 <p className="mt-2.5 text-sm leading-7 text-gray-500 dark:text-gray-400">{text}</p>
               </div>
@@ -141,7 +135,7 @@ export default async function HomePage() {
         <Reveal className="flex flex-col sm:flex-row gap-5 sm:items-end justify-between">
           <div className="space-y-3">
             <p className="eyebrow">Selected work</p>
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-xl">A few things I&apos;ve helped bring to life.</h2>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-xl">Projects I built</h2>
           </div>
           <Link href="/projects" className="btn btn-ghost !py-2.5 shrink-0">
             See all projects <ArrowRight className="w-4 h-4 arrow" />
@@ -202,8 +196,8 @@ export default async function HomePage() {
         <Reveal>
           <div className="cta-surface px-7 py-14 sm:px-14 sm:py-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
             <div className="max-w-2xl space-y-4">
-              <p className="text-sm font-semibold tracking-wide text-white/70">Have a project in mind?</p>
-              <h2 className="on-dark text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.08]">Let&apos;s make it simple, useful, and durable.</h2>
+              <p className="text-sm font-semibold tracking-wide text-white/70">Want to work together?</p>
+              <h2 className="on-dark text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.08]">I am open to software engineering jobs. Send me a message.</h2>
             </div>
             <Magnetic strength={0.35}>
               <Link href="/contact" className="btn btn-light !px-7 !py-4 text-base">
