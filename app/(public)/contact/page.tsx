@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
 import { ContactFormClient } from '@/components/contact-form-client'
 import { DynamicIcon } from '@/components/icon'
+import { SITE, resolveSocialLinks } from '@/lib/site-config'
 import { Mail, MapPin, Phone, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react'
 
 export default async function ContactPage() {
@@ -16,13 +17,13 @@ export default async function ContactPage() {
       <div className="space-y-4 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
           <MessageSquare className="w-3.5 h-3.5" />
-          <span>ENTERPRISE INQUIRIES & ADVISORY</span>
+          <span>OPEN TO SOFTWARE ENGINEERING ROLES</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-white">
           Get in <span className="gradient-text">Touch</span>
         </h1>
         <p className="text-gray-400 text-base sm:text-lg">
-          Available for senior architecture advisory, principal engineering, and technology consulting.
+          Open to full-stack, backend, mobile, and AI software engineering roles. Send a message and I will reply as soon as I can.
         </p>
       </div>
 
@@ -42,11 +43,12 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <p className="font-mono text-gray-400 uppercase text-[10px]">Email Address</p>
-                  <a href={`mailto:${profile?.email}`} className="text-white hover:text-blue-400 font-semibold transition-colors">
-                    {profile?.email || 'contact@gebretsadik.io'}
+                  <a href={`mailto:${SITE.email}`} className="text-white hover:text-blue-400 font-semibold transition-colors">
+                    {SITE.email}
                   </a>
                 </div>
               </div>
+              {profile?.phone && (
 
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
@@ -54,9 +56,10 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <p className="font-mono text-gray-400 uppercase text-[10px]">Direct Phone</p>
-                  <p className="text-white font-semibold">{profile?.phone || '+1 (555) 019-2834'}</p>
+                  <p className="text-white font-semibold">{profile.phone}</p>
                 </div>
               </div>
+              )}
 
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
@@ -64,17 +67,17 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <p className="font-mono text-gray-400 uppercase text-[10px]">Location</p>
-                  <p className="text-white font-semibold">{profile?.location || 'San Francisco, CA / Remote'}</p>
+                  <p className="text-white font-semibold">{profile?.location || 'Gondar, Ethiopia'}</p>
                 </div>
               </div>
             </div>
 
             {/* Social Channels */}
-            {profile?.socialLinks && profile.socialLinks.length > 0 && (
+            {resolveSocialLinks(profile?.socialLinks ?? []).length > 0 && (
               <div className="pt-4 border-t border-white/10 space-y-3">
                 <p className="font-mono text-gray-400 uppercase text-[10px]">Social & Code Profiles</p>
                 <div className="flex flex-wrap gap-2">
-                  {profile.socialLinks.map((link) => (
+                  {resolveSocialLinks(profile?.socialLinks ?? []).map((link) => (
                     <a
                       key={link.id}
                       href={link.url}
@@ -93,10 +96,10 @@ export default async function ContactPage() {
           <GlassCard className="space-y-3">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              SLA & Response Guarantee
+              Message Protection
             </h3>
             <p className="text-xs text-gray-400 leading-relaxed">
-              All messages submitted via this portal are protected with automated rate-limiting and anti-spam verification. Inquiries are generally addressed within 12 business hours.
+              Messages sent through this form are protected with automated rate limiting and anti-spam checks.
             </p>
           </GlassCard>
         </div>

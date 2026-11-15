@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
+import { SITE, resolveSocialLinks } from '@/lib/site-config'
 import { DynamicIcon } from '@/components/icon'
 import { HeroVisual } from '@/components/hero-visual'
 import { Reveal, Stagger, StaggerItem, WordReveal, Magnetic, CountUp, Marquee } from '@/components/motion'
@@ -9,19 +10,18 @@ import { ArrowRight, Download, Mail, Code2, ShieldCheck, Layers3 } from 'lucide-
 const fallbackStack = ['Next.js', 'React', 'TypeScript', 'Node.js', 'Flutter', 'PostgreSQL', 'Docker', 'AI Systems', 'Real-Time', 'Cloud Native', 'GraphQL', 'Prisma']
 
 export default async function HomePage() {
-  const [profile, featuredProjects, skillsCount, projectsCount, experiences, topSkills] = await Promise.all([
+  const [profile, featuredProjects, skillsCount, projectsCount, topSkills] = await Promise.all([
     prisma.profile.findFirst({ include: { socialLinks: { orderBy: { order: 'asc' } } } }).catch(() => null),
     prisma.project.findMany({ where: { featured: true }, orderBy: { rank: 'asc' }, take: 3, include: { technologies: true } }).catch(() => []),
     prisma.skill.count().catch(() => 0),
     prisma.project.count().catch(() => 0),
-    prisma.experience.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
     prisma.skill.findMany({ orderBy: { level: 'desc' }, take: 14, select: { name: true } }).catch(() => []),
   ])
 
-  const name = profile?.name || 'Gebretsadik M. Engida'
+  const name = profile?.name || SITE.name
+  const socialLinks = resolveSocialLinks(profile?.socialLinks ?? [])
   const stack = topSkills.length >= 4 ? topSkills.map((s) => s.name) : fallbackStack
   const stats = [
-    { label: 'Roles', value: experiences.length || 9, suffix: '+' },
     { label: 'Projects', value: projectsCount || featuredProjects.length, suffix: '+' },
     { label: 'Tools', value: skillsCount || 40 },
   ]
@@ -48,7 +48,7 @@ export default async function HomePage() {
               />
             </h1>
             <Reveal delay={0.55} y={14}>
-              <p className="text-lg sm:text-xl font-semibold text-[var(--brand-1)]">{profile?.title || 'Full-Stack Engineer & Systems Builder'}</p>
+              <p className="text-lg sm:text-xl font-semibold text-[var(--brand-1)]">{profile?.title || 'Full-Stack Software Engineer'}</p>
             </Reveal>
             <Reveal delay={0.65} y={14}>
               <p className="max-w-2xl mx-auto lg:mx-0 text-base sm:text-lg leading-8 text-gray-500 dark:text-gray-400">
@@ -75,11 +75,11 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          {profile?.socialLinks && profile.socialLinks.length > 0 && (
+          {socialLinks.length > 0 && (
             <Reveal delay={0.95} y={10}>
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
                 <span className="mr-2 text-xs font-medium uppercase tracking-[.14em] text-gray-500">Find me</span>
-                {profile.socialLinks.map((link) => (
+                {socialLinks.map((link) => (
                   <a
                     key={link.id}
                     href={link.url}
@@ -186,11 +186,8 @@ export default async function HomePage() {
       {/* ================= NUMBERS ================= */}
       <section>
         <Reveal>
-          <div className="glass-card grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[var(--line)] overflow-hidden">
-            {[
-              { label: 'Years building', value: 9, suffix: '+' },
-              ...stats,
-            ].map((s) => (
+          <div className="glass-card grid grid-cols-2 divide-x divide-y md:divide-y-0 divide-[var(--line)] overflow-hidden">
+            {stats.map((s) => (
               <div key={s.label} className="p-7 sm:p-9 text-center">
                 <p className="text-4xl sm:text-5xl font-extrabold gradient-text font-[family-name:var(--font-display)]"><CountUp to={s.value} suffix={s.suffix} /></p>
                 <p className="mt-2 text-xs tracking-[.16em] uppercase text-gray-500">{s.label}</p>

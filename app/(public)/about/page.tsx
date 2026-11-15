@@ -19,13 +19,13 @@ export default async function AboutPage() {
       <Reveal className="space-y-4 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
           <Compass className="w-3.5 h-3.5" />
-          <span>CAREER JOURNEY & PHILOSOPHY</span>
+          <span>BACKGROUND & APPROACH</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-white">
           About <span className="gradient-text">{profile?.name || 'Gebretsadik'}</span>
         </h1>
         <p className="text-gray-400 text-base sm:text-lg">
-          Senior Software Engineer, System Architect, Freelance Advisory Consultant, and Tech Entrepreneur.
+          Computer Science graduate and full-stack software engineer building web, mobile, real-time, and AI-powered applications.
         </p>
       </Reveal>
 
@@ -36,16 +36,16 @@ export default async function AboutPage() {
             <span className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-blue-400">
               <Compass className="w-4 h-4" />
             </span>
-            Biography & Engineering Background
+            Biography & Background
           </h2>
 
           <div className="prose prose-invert max-w-none text-gray-300 space-y-4 text-sm sm:text-base leading-relaxed">
             <p>{profile?.bio}</p>
             <p>
-              Throughout my 9+ years in technology, I have specialized in building distributed control planes, high-throughput microservices, edge routing networks, and AI-assisted developer platforms.
+              Through my studies at the University of Gondar and independent projects, I have built full-stack platforms, real-time communication apps, mobile applications, and AI-assisted systems using Next.js, Spring Boot, NestJS, React Native, PostgreSQL, and MongoDB.
             </p>
             <p>
-              I believe in clean code architectures, strict type safety, zero-trust security design, and ruthless performance optimization. When I am not designing fault-tolerant backends, I write technical articles and advise high-growth tech startups.
+              I care about clean, type-safe code, secure authentication, and reliable systems. I am looking for a software engineering role where I can keep learning while contributing to real products.
             </p>
           </div>
         </GlassCard>
@@ -55,15 +55,15 @@ export default async function AboutPage() {
           <ul className="space-y-4 text-xs text-gray-300">
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-              <span><strong>Design for Failure:</strong> Distributed systems will partition. Build resilient consensus and graceful fallbacks.</span>
+              <span><strong>Build for Real Use:</strong> Start from the user's problem and keep interfaces clear, fast, and easy to use.</span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
-              <span><strong>Type-Safe Contracts:</strong> Enforce strict schemas with TypeScript, Zod, and gRPC across all service boundaries.</span>
+              <span><strong>Type-Safe Contracts:</strong> Use TypeScript and schema validation such as Zod to keep data consistent across the app.</span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span><strong>Sub-Millisecond SLAs:</strong> Optimize cache locality, database indexes, and network packet serialization.</span>
+              <span><strong>Secure by Default:</strong> Use authentication, role-based access control, and input validation from the first version.</span>
             </li>
           </ul>
 
