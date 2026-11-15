@@ -705,3 +705,23 @@ h2 { letter-spacing: -0.025em; }
 @media (prefers-reduced-motion: reduce) {
   .site-backdrop .blob, .gradient-text, .marquee-track, .cta-surface, .pulse-dot::after { animation: none !important; }
 }
+
+/* =====================================================================
+   Calm, simple look: flat colors, no glow, no floating or sliding motion
+   ===================================================================== */
+:root { --brand-2: var(--brand-1); }
+h1, h2, h3 { font-family: var(--font-family); letter-spacing: -0.01em; }
+.site-backdrop { display: none; }
+.gradient-text { background: none; -webkit-text-fill-color: currentColor; color: var(--brand-1); animation: none; }
+.glass-card, .glass-card:hover { box-shadow: none; transform: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.card-gradient::before, .spotlight::after { display: none; }
+.card-gradient:hover { box-shadow: none; }
+.btn, .btn:hover { transform: none; }
+.btn-primary { background: var(--brand-1); box-shadow: none; }
+.btn-primary:hover { box-shadow: none; filter: brightness(1.1); }
+.icon-tile { background: color-mix(in srgb, var(--brand-1) 14%, transparent); color: var(--brand-1); box-shadow: none; }
+.pulse-dot::after { display: none; }
+.bar-fill { background: var(--brand-1); box-shadow: none; }
+.marquee-dot { background: var(--brand-1); }
+.cta-surface { background: color-mix(in srgb, var(--brand-1) 80%, #000); animation: none; }
+.cta-surface::before { display: none; }

@@ -8,6 +8,7 @@ export const SITE = {
   email: 'enoch3696@gmail.com',
   linkedin: 'https://www.linkedin.com/in/gebretsadik-alehegn-3a7999430',
   github: 'https://github.com/enoch936',
+  photo: '/images/photo_2026-07-29_02-24-06.jpg',
 } as const
 
 type SocialLinkLike = { id: string; platform: string; url: string; iconName: string }
