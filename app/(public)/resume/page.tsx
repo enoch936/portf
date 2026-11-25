@@ -6,13 +6,14 @@ import { ResumeViewButton } from '@/components/resume-view-button'
 import { FileText, Download, Briefcase, GraduationCap, Award, Cpu, ShieldCheck } from 'lucide-react'
 
 export default async function ResumePage() {
-  const [profile, resume, experiences, educations, certifications, skills] = await Promise.all([
+  const [profile, resume, experiences, educations, certifications, skills, projects] = await Promise.all([
     prisma.profile.findFirst().catch(() => null),
     prisma.resume.findFirst({ where: { isDefault: true } }).catch(() => null),
     prisma.experience.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
     prisma.education.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
     prisma.certification.findMany({ orderBy: { order: 'asc' } }).catch(() => []),
     prisma.skill.findMany({ orderBy: { order: 'asc' }, take: 10 }).catch(() => []),
+    prisma.project.findMany({ orderBy: { rank: 'asc' }, select: { id: true, title: true, summary: true, category: true } }).catch(() => []),
   ])
 
   return (
@@ -22,17 +23,16 @@ export default async function ResumePage() {
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
             <FileText className="w-3.5 h-3.5" />
-            <span>EXECUTIVE CURRICULUM VITAE</span>
+            <span>CURRICULUM VITAE</span>
           </div>
           <h1 className="text-3xl font-bold text-white">{profile?.name} - Resume</h1>
-          <p className="text-xs text-gray-400 font-mono">Downloads Count: {resume?.downloadsCount || 0} tracked downloads</p>
         </div>
 
         <div className="flex items-center gap-3">
           <ResumeViewButton />
           <ResumeDownloadButton
             resumeId={resume?.id || ''}
-            pdfUrl={resume?.pdfUrl || profile?.cvPdfUrl || '/documents/Gebretsadik_Senior_Architect_CV.pdf'}
+            pdfUrl={resume?.pdfUrl || profile?.cvPdfUrl || '/api/cv'}
           />
         </div>
       </div>
@@ -54,7 +54,7 @@ export default async function ResumePage() {
 
         {/* Summary */}
         <div className="space-y-3">
-          <h3 className="text-sm font-mono text-blue-400 uppercase tracking-wider font-bold">Executive Summary</h3>
+          <h3 className="text-sm font-mono text-blue-400 uppercase tracking-wider font-bold">Summary</h3>
           <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
             {resume?.summary || profile?.bio}
           </p>
@@ -107,6 +107,23 @@ export default async function ResumePage() {
           </div>
         </div>
 
+        {/* Projects */}
+        {projects.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-sm font-mono text-blue-400 uppercase tracking-wider font-bold">Selected Projects</h3>
+            <div className="space-y-3">
+              {projects.map((project) => (
+                <div key={project.id} className="text-xs space-y-0.5 border-l-2 border-blue-500/40 pl-4">
+                  <p className="font-bold text-white text-sm">
+                    {project.title} <span className="font-mono text-gray-400 font-normal">— {project.category}</span>
+                  </p>
+                  <p className="text-gray-300">{project.summary}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Education & Certifications */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-white/10">
           <div className="space-y-3">
@@ -128,7 +145,7 @@ export default async function ResumePage() {
             {certifications.map((cert) => (
               <div key={cert.id} className="text-xs space-y-0.5">
                 <p className="font-bold text-white">{cert.title}</p>
-                <p className="text-gray-400">{cert.issuer} ({cert.issueDate})</p>
+                <p className="text-gray-400">{cert.issuer}{cert.issueDate ? ` (${cert.issueDate})` : ''}</p>
               </div>
             ))}
           </div>

@@ -11,25 +11,25 @@ export async function generateAICacheAction(type: 'project' | 'blog' | 'resume',
   try {
     let resultText = ''
 
+    // Scaffolds only: placeholders must be filled with real, verifiable details.
     if (type === 'project') {
-      resultText = `### High-Level Architecture Overview: ${promptText}\n\n` +
+      resultText = `### Project Overview: ${promptText}\n\n` +
         `**Key Features**:\n` +
-        `- Multi-region active-active database replication with sub-5ms SLA.\n` +
-        `- Zero-trust authentication gateway using OAuth2 & JWT tokens.\n` +
-        `- Event-driven architecture powered by Apache Kafka & Redis pub/sub.\n\n` +
+        `- [Describe a feature you actually built]\n` +
+        `- [Describe another real feature]\n\n` +
         `**Technical Challenges & Solutions**:\n` +
-        `*Challenge*: Maintaining thread safety and lockless queues under peak load (100k+ ops/sec).\n` +
-        `*Solution*: Engineered custom ring buffer in Go with atomic CAS operations.`
+        `*Challenge*: [A real problem you faced]\n` +
+        `*Solution*: [What you actually did]`
     } else if (type === 'blog') {
       resultText = `# Article Outline: ${promptText}\n\n` +
-        `## 1. Introduction & Background Problem\n` +
-        `Explain the modern bottleneck in traditional cloud setups.\n\n` +
-        `## 2. Core Technical Architecture\n` +
-        `Detailed code examples showing AST parsing, memory management, and asynchronous workers.\n\n` +
-        `## 3. Benchmarks & Production Learnings\n` +
-        `Latency distribution, memory footprint comparison, and operational gotchas.`
+        `## 1. Introduction & Problem\n` +
+        `[What problem are you writing about, and why does it matter?]\n\n` +
+        `## 2. Approach\n` +
+        `[How you approached it, with code from your own work]\n\n` +
+        `## 3. What I Learned\n` +
+        `[Real results and lessons, no invented numbers]`
     } else if (type === 'resume') {
-      resultText = `Senior Software Architect with 9+ years of experience leading engineering teams and building fault-tolerant distributed systems. Proven track record in scaling cloud infrastructures to process over 1.2 Billion requests daily with 99.999% uptime.`
+      resultText = `Computer Science graduate (University of Gondar) and full-stack software engineer with hands-on project experience in [your real focus areas]. Built [your real projects] using [your real stack].`
     }
 
     return { success: true, generatedContent: resultText }

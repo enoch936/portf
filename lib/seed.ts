@@ -64,7 +64,7 @@ async function main() {
         institution: 'University of Gondar',
         degree: 'Bachelor of Science (B.S.)',
         field: 'Computer Science',
-        period: '2020 - 2024',
+        period: '2022 - 2026',
         location: 'Gondar, Ethiopia',
         description: 'Focus on software engineering, data structures, algorithms, database systems, artificial intelligence, machine learning, computer networks, operating systems, and distributed systems.',
         order: 1,
@@ -72,8 +72,18 @@ async function main() {
     ],
   })
 
-  // 6. Certifications - none listed in the real CV
+  // 6. Certifications - from the real CV
   await prisma.certification.deleteMany({})
+  await prisma.certification.createMany({
+    data: [
+      {
+        title: 'Ethiopian 5 Million Coders Initiative (AI & Android tracks)',
+        issuer: 'Udacity',
+        issueDate: '',
+        order: 1,
+      },
+    ],
+  })
 
   // 7. Skill Categories & Skills - Real data from CV
   await prisma.skillCategory.deleteMany({})

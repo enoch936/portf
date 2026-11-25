@@ -1,6 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
+import { SITE } from '@/lib/site-config'
+
+const contactLinks = [
+  { label: 'GitHub', href: SITE.github },
+  { label: 'LinkedIn', href: SITE.linkedin },
+  { label: 'Email', href: `mailto:${SITE.email}` },
+]
 
 const links = [
   { label: 'About', href: '/about' },
@@ -35,6 +42,14 @@ export function Footer() {
             {links.map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className="link-underline hover:text-slate-950 dark:hover:text-white transition-colors">{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+          <p className="eyebrow mt-8 mb-4">Connect</p>
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm text-gray-500 dark:text-gray-400">
+            {contactLinks.map((l) => (
+              <li key={l.label}>
+                <a href={l.href} {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="link-underline hover:text-slate-950 dark:hover:text-white transition-colors">{l.label}</a>
               </li>
             ))}
           </ul>
