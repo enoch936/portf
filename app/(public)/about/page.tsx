@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
+import { SecurityEmbeddedSection } from '@/components/security-embedded-section'
 import { Reveal } from '@/components/motion'
 import { Briefcase, GraduationCap, Award, Compass, CheckCircle2, Calendar, MapPin } from 'lucide-react'
 
@@ -129,6 +130,8 @@ export default async function AboutPage() {
           })}
         </div>
       </section>
+
+      <SecurityEmbeddedSection />
 
       {/* Education & Certifications Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
