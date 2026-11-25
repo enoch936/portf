@@ -3,6 +3,19 @@ import { Navbar, NavItem } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { prisma } from '@/lib/prisma'
+import { SITE } from '@/lib/site-config'
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.name,
+  jobTitle: 'Full-Stack Software Engineer',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://portf-theta-tan.vercel.app',
+  email: `mailto:${SITE.email}`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Gondar', addressCountry: 'ET' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'University of Gondar' },
+  sameAs: [SITE.github, SITE.linkedin],
+}
 
 export default async function PublicLayout({
   children,
@@ -40,6 +53,10 @@ export default async function PublicLayout({
 
   return (
     <div className="relative isolate flex flex-col min-h-screen gradient-bg-hero">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, '\\u003c') }}
+      />
       <div className="site-backdrop" aria-hidden="true">
         <div className="grid-lines" />
         <span className="blob blob-1" />

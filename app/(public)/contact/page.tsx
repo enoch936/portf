@@ -2,9 +2,8 @@ import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
 import { ContactFormClient } from '@/components/contact-form-client'
-import { DynamicIcon } from '@/components/icon'
-import { SITE, resolveSocialLinks } from '@/lib/site-config'
-import { Mail, MapPin, Phone, MessageSquare, ShieldCheck, Sparkles } from 'lucide-react'
+import { SITE, getSocialLinks } from '@/lib/site-config'
+import { Mail, MapPin, Phone, MessageSquare, ShieldCheck, Sparkles, ArrowUpRight } from 'lucide-react'
 
 export default async function ContactPage() {
   const profile = await prisma.profile.findFirst({
@@ -48,7 +47,7 @@ export default async function ContactPage() {
                   </a>
                 </div>
               </div>
-              {profile?.phone && (
+              {SITE.phone && (
 
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
@@ -56,7 +55,7 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <p className="font-mono text-gray-400 uppercase text-[10px]">Direct Phone</p>
-                  <p className="text-white font-semibold">{profile.phone}</p>
+                  <a href={SITE.phoneHref} className="text-white hover:text-blue-400 font-semibold transition-colors">{SITE.phone}</a>
                 </div>
               </div>
               )}
@@ -67,30 +66,27 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <p className="font-mono text-gray-400 uppercase text-[10px]">Location</p>
-                  <p className="text-white font-semibold">{profile?.location || 'Gondar, Ethiopia'}</p>
+                  <p className="text-white font-semibold">{SITE.location}</p>
                 </div>
               </div>
             </div>
 
-            {/* Social Channels */}
-            {resolveSocialLinks(profile?.socialLinks ?? []).length > 0 && (
-              <div className="pt-4 border-t border-white/10 space-y-3">
-                <p className="font-mono text-gray-400 uppercase text-[10px]">Social & Code Profiles</p>
-                <div className="flex flex-wrap gap-2">
-                  {resolveSocialLinks(profile?.socialLinks ?? []).map((link) => (
-                    <a
-                      key={link.id}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all"
-                    >
-                      <DynamicIcon name={link.iconName} className="w-4 h-4" />
-                    </a>
-                  ))}
-                </div>
+            {/* Profiles: labelled links (icon-only links were ambiguous) */}
+            <div className="pt-4 border-t border-white/10 space-y-3">
+              <p className="font-mono text-gray-400 uppercase text-[10px]">Social & Code Profiles</p>
+              <div className="flex flex-wrap gap-2">
+                {getSocialLinks(profile?.socialLinks ?? []).map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    {...(link.url.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition-all"
+                  >
+                    {link.platform} <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                ))}
               </div>
-            )}
+            </div>
           </GlassCard>
 
           <GlassCard className="space-y-3">

@@ -1,5 +1,6 @@
 import React from 'react'
 import { prisma } from '@/lib/prisma'
+import { SITE } from '@/lib/site-config'
 import { GlassCard } from '@/components/ui/glass-card'
 import { ResumeDownloadButton } from '@/components/resume-download-button'
 import { ResumeViewButton } from '@/components/resume-view-button'
@@ -46,9 +47,14 @@ export default async function ResumePage() {
             <p className="text-base font-semibold text-blue-400 mt-1">{profile?.title}</p>
           </div>
           <div className="text-xs font-mono text-gray-400 space-y-1 sm:text-right">
-            <p>{profile?.email}</p>
-            <p>{profile?.phone}</p>
-            <p>{profile?.location}</p>
+            <p><a href={`mailto:${SITE.email}`} className="hover:text-white transition-colors">{SITE.email}</a></p>
+            <p><a href={SITE.phoneHref} className="hover:text-white transition-colors">{SITE.phone}</a></p>
+            <p>{SITE.location}</p>
+            <p>
+              <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+              {' · '}
+              <a href={SITE.github} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+            </p>
           </div>
         </div>
 

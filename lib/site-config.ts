@@ -8,6 +8,9 @@ export const SITE = {
   email: 'enoch3696@gmail.com',
   linkedin: 'https://www.linkedin.com/in/gebretsadik-alehegn-3a7999430',
   github: 'https://github.com/enoch936',
+  phone: '+251 918184887',
+  phoneHref: 'tel:+251918184887',
+  location: 'Gondar, Ethiopia',
 } as const
 
 type SocialLinkLike = { id: string; platform: string; url: string; iconName: string }
@@ -21,4 +24,15 @@ export function resolveSocialLinks<T extends SocialLinkLike>(links: T[]): T[] {
     if (platform === 'email') return { ...link, url: `mailto:${SITE.email}` }
     return link
   })
+}
+
+// Always returns something to show: database links when present (with fixed URLs), otherwise the canonical ones.
+export function getSocialLinks<T extends SocialLinkLike>(links: T[]): SocialLinkLike[] {
+  const resolved = resolveSocialLinks(links)
+  if (resolved.length > 0) return resolved
+  return [
+    { id: 'github', platform: 'GitHub', url: SITE.github, iconName: 'Code2' },
+    { id: 'linkedin', platform: 'LinkedIn', url: SITE.linkedin, iconName: 'Users' },
+    { id: 'email', platform: 'Email', url: `mailto:${SITE.email}`, iconName: 'Mail' },
+  ]
 }

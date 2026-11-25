@@ -31,6 +31,7 @@ export function Footer() {
           <p className="max-w-sm text-sm leading-6 text-gray-500 dark:text-gray-400">
             Computer Science graduate and full-stack software engineer. Building software that holds up in the real world.
           </p>
+          <p className="text-xs text-gray-500">Based in {SITE.location}</p>
           <Link href="/contact" className="btn btn-primary !py-2.5 !px-4 !text-xs">
             Start a conversation <ArrowUpRight className="w-3.5 h-3.5 arrow" />
           </Link>
