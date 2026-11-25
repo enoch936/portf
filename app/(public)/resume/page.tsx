@@ -1,6 +1,7 @@
 import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { SITE } from '@/lib/site-config'
+import { EDUCATION, CERTIFICATIONS } from '@/lib/credentials'
 import { GlassCard } from '@/components/ui/glass-card'
 import { ResumeDownloadButton } from '@/components/resume-download-button'
 import { ResumeViewButton } from '@/components/resume-view-button'
@@ -136,7 +137,7 @@ export default async function ResumePage() {
             <h3 className="text-sm font-mono text-blue-400 uppercase tracking-wider font-bold flex items-center gap-2">
               <GraduationCap className="w-4 h-4" /> Education
             </h3>
-            {educations.map((edu) => (
+            {(EDUCATION.length ? EDUCATION : educations).map((edu) => (
               <div key={edu.id} className="text-xs space-y-0.5">
                 <p className="font-bold text-white">{edu.degree} in {edu.field}</p>
                 <p className="text-gray-400">{edu.institution} ({edu.period})</p>
@@ -148,7 +149,7 @@ export default async function ResumePage() {
             <h3 className="text-sm font-mono text-blue-400 uppercase tracking-wider font-bold flex items-center gap-2">
               <Award className="w-4 h-4" /> Certifications
             </h3>
-            {certifications.map((cert) => (
+            {(CERTIFICATIONS.length ? CERTIFICATIONS : certifications).map((cert) => (
               <div key={cert.id} className="text-xs space-y-0.5">
                 <p className="font-bold text-white">{cert.title}</p>
                 <p className="text-gray-400">{cert.issuer}{cert.issueDate ? ` (${cert.issueDate})` : ''}</p>

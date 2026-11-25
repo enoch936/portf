@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { GlassCard } from '@/components/ui/glass-card'
 import { SecurityEmbeddedSection } from '@/components/security-embedded-section'
+import { EDUCATION, CERTIFICATIONS } from '@/lib/credentials'
 import { Reveal } from '@/components/motion'
 import { Briefcase, GraduationCap, Award, Compass, CheckCircle2, Calendar, MapPin } from 'lucide-react'
 
@@ -144,7 +145,7 @@ export default async function AboutPage() {
             Education & Degrees
           </h2>
           <div className="space-y-4">
-            {educations.map((edu) => (
+            {(EDUCATION.length ? EDUCATION : educations).map((edu) => (
               <GlassCard key={edu.id} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">{edu.institution}</h3>
@@ -166,7 +167,7 @@ export default async function AboutPage() {
             Industry Certifications
           </h2>
           <div className="space-y-4">
-            {certifications.map((cert) => (
+            {(CERTIFICATIONS.length ? CERTIFICATIONS : certifications).map((cert) => (
               <GlassCard key={cert.id} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white">{cert.title}</h3>

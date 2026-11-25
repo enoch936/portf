@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { EDUCATION, CERTIFICATIONS } from '@/lib/credentials'
 
 export async function GET() {
   const profile = await prisma.profile.findFirst()
   const resume = await prisma.resume.findFirst({ where: { isDefault: true } })
-  const educations = await prisma.education.findMany({ orderBy: { order: 'asc' } })
+  const educations = EDUCATION.length ? EDUCATION : await prisma.education.findMany({ orderBy: { order: 'asc' } })
   const skillCategories = await prisma.skillCategory.findMany({
     orderBy: { order: 'asc' },
     include: { skills: { orderBy: { order: 'asc' } } },
@@ -55,6 +56,19 @@ export async function GET() {
         </div>`
     )
     .join('')
+
+  const certificationsHTML = CERTIFICATIONS.map(
+    (cert) => `
+        <div class="project-item searchable-item">
+          <div>
+            <div class="project-header">
+              <span class="project-title">${escapeHtml(cert.title)}</span>
+            </div>
+            <div class="project-tagline">${escapeHtml(cert.issuer)}${cert.issueDate ? ' — ' + escapeHtml(cert.issueDate) : ''}</div>
+            ${cert.credentialId ? `<p style="font-size:0.8rem;color:var(--text-main)">Credential ID: ${escapeHtml(cert.credentialId)}</p>` : ''}
+          </div>
+        </div>`
+  ).join('')
 
   const skillsHTML = skillCategories
     .map(
@@ -220,6 +234,8 @@ ${strengthsHTML ? `
 <section class="card searchable-content">
 <h2 class="section-title">Education</h2>
 ${educationHTML}
+${CERTIFICATIONS.length ? `<h2 class="section-title">Certifications</h2>
+${certificationsHTML}` : ''}
 </section>
 </div>
 
